@@ -1,0 +1,153 @@
+%==============第二章节内容==================
+\chapter{分数阶导数的基本理论}
+
+分数阶微积分最早由德国数学家~G.W.Leibniz 提出，它是传统整数阶微积分理论的推广，相比与整数阶算子，分数阶微分算子拥有非局部特性，能够有效地描述材料的记忆和遗传等重要性质。早期由于分数阶微积分在物理意义上与牛顿整数阶积分理论体系向左，并且缺乏物理、力学背景的支持，故发展十分缓慢。近年来，随着分数阶微积分方程在记忆材料、反常扩散、粘弹性力学、多孔介质中溶质的对流扩散、分子生物学等领域的广泛应用与发展，它已成为科研工作者研究描述各种复杂力学与物理行为的重要工具之一。
+\section{分数阶导数的定义及应用}
+在不同的研究领域，分数阶积分与分数阶导数的定义也不尽相同，本章就一些常见的分数阶积分和分数阶导数，给出了本文需要使用到分数阶积分及分数阶导数的定义及相关性质。
+\subsection{Gamma 函数及其性质}
+
+分数阶导数定义中的基本函数之一为~Gamma 函数 $\Gamma(z)$。数学上，Gamma 函数是阶乘函数 $n！$ 的推广，其中 $n$ 可取非整数甚至复数值。
+\definibox{Gamma 函数}{第二类~Euler 积分
+$$ \Gamma (z) = \int_0^{ + \infty } {{x^{z - 1}}{e^{ - x}}} dx, \quad {\mathop{\rm Re}\nolimits} (z) > 0 $$
+称为~Gamma 函数，这里~$z$ 是一个复数，${\rm Re(z)}$ 表示其实部的值。}
+
+利用分部积分公式，Gamma 函数具有下列递推公式：
+\begin{equation}\label{eq2.1}
+  \Gamma (z + 1) = z\Gamma (z), \quad {\rm Re(z)} > 0.
+\end{equation}
+当 $- n <{\rm Re(z)} \le  - n + 1$ ($n$ 为正整数) 时，有
+$$\Gamma (z){\rm{ = }}\frac{{\Gamma (z + {\rm{n}})}}{{{{(z)}_n}}} = \frac{{\Gamma (z + {\rm{n}})}}{{z(z + 1) \cdots (z + n - 1)}}.$$
+
+Gamma 函数的性质：
+
+  (1) $\Gamma (0) = 1$，且对于任意正整数~$n$，有 $\Gamma (n) = (n - 1)!$ ;
+
+  (2) 对于任意的正整数~$n$，有 $$ \Gamma (z + n) = {(z)_n}\Gamma (z), $$
+  $$\Gamma (z - n) = \frac{{\Gamma (z)}}{{{{(z - n)}_n}}} = \frac{{{{( - 1)}^n}}}{{{{(1 - z)}_n}}}\Gamma (z), \; z \ne 1,2,3, \cdots ;$$
+
+  (3) $\Gamma ({1 \mathord{\left/
+ {\vphantom {1 2}} \right.
+ \kern-\nulldelimiterspace} 2}) = \sqrt {\pi } $。
+
+\subsection{Riemann-Liouville (R-L) 分数阶积分与分数阶导数}
+分数阶导数实质上是任意阶的微积分，它由~$n$ 阶导数和~$n$ 次积分发展而来。首先介绍~Riemann-Liouville 分数阶积分定义。
+\definibox{~Riemann-Liouville 分数阶积分\;\ucite{Samko1993}}{
+ 设 ~$\alpha$ 为任意非负实数，$f(x)$ 为定义在区间~$\Omega = [a,b]$ ($a, b$ 为有限或者~$\infty$) 上的函数，称
+\begin{equation}\label{eq2.2}
+  I_{a + }^\alpha f(x) = \frac{1}{{\Gamma (\alpha )}}\int_a^x {\frac{{f(t)}}{{{{(x - t)}^{1 - \alpha }}}}} dt, \quad x \in \Omega
+\end{equation}
+为函数~$f(x)$ 的左侧~$\alpha$ 阶~Riemann-Liouville 分数阶积分。}
+\begin{equation}\label{eq2.3}
+  I_{b - }^\alpha f(x) = \frac{1}{{\Gamma (\alpha )}}\int_x^b {\frac{{f(t)}}{{{{(t - x)}^{1 - \alpha }}}}} dt,\;\;\;x \in \Omega
+\end{equation}
+为函数~$f(x)$ 的右侧~$\alpha$ 阶~Riemann-Liouville 分数阶积分。
+当函数~$f(x)$ 取为幂函数时，计算可得
+\begin{equation}\label{wc}
+  I_{a + }^\alpha {(x - a)^p} = \frac{{\Gamma (p + 1)}}{{\Gamma (p + \alpha  + 1)}}{(x - a)^{p + \alpha }}, \; 0 \le n - 1 \le \alpha  < n, \; p >  - 1,
+\end{equation}
+\begin{equation}\label{eq2.5}
+  I_{b - }^\alpha {(b - x)^p} = {( - 1)^n}\frac{{\Gamma (p + 1)}}{{\Gamma (p + \alpha  + 1)}}{(b - x)^{p + \alpha }}, \; 0 \le n - 1 \le \alpha  < n, \; p >  - 1.
+\end{equation}
+
+下面介绍几种本文使用到的几种分数阶导数的定义，首先给出~Riemann-Liouville 分数阶导数定义。
+\definibox{~Riemann-Liouville 分数阶导数\;\ucite{Podlubny1999Fractional}}
+{设 ~$\alpha$ 为任意非负实数，满足~$n-1\leq \alpha <n $，$n$ 为一个正整数。$f(x)$ 为定义在区间~$\Omega = [a,b]$ ($a, b$ 为有限或者~$\infty$) 上的函数，
+\begin{equation}\label{eq2.6}
+ {}_a^RD_x^\alpha f(x) = \frac{1}{{\Gamma (n - \alpha )}}\frac{{{d^n}}}{{d{x^n}}}\int_a^x {\frac{{f(t)}}{{{{(x - t)}^{\alpha  - n + 1}}}}} dt,
+\end{equation}
+称为左侧~$\alpha$ 阶~Riemann-Liouville 分数阶导数。
+\begin{equation}\label{eq2.7}
+ {}_x^RD_b^\alpha f(x) = \frac{{{{( - 1)}^n}}}{{\Gamma (n - \alpha )}}\frac{{{d^n}}}{{d{x^n}}}\int_x^b {\frac{{f(t)}}{{{{(t - x)}^{\alpha  - n + 1}}}}} dt,
+\end{equation}
+称为右侧~$\alpha$ 阶~Riemann-Liouville 分数阶导数。}
+
+若$~\alpha=m$ 为整数，则式\;(\ref{eq2.6})-(\ref{eq2.7}) 退化为标准的整数阶导数
+\begin{equation*}
+  _a^RD_x^mf(x) = \frac{{{d^m}f(x)}}{{d{x^m}}}, \quad _x^RD_b^mf(x) = {( - 1)^m}\frac{{{d^m}f(x)}}{{d{x^m}}} = \frac{{{d^m}f(x)}}{{d{{( - x)}^m}}}.
+\end{equation*}
+当函数~$f(x)$ 取为幂函数时，计算可得
+\begin{equation}\label{eq2.8}
+  {}_a^RD_x^\alpha {(x - a)^p} = \frac{{\Gamma (p + 1)}}{{\Gamma (p - \alpha  + 1)}}{(x - a)^{p - \alpha }}, \; 0 \le n - 1 \le \alpha  < n, \; p > n,
+\end{equation}
+\begin{equation}\label{eq2.9}
+  {}_x^RD_b^\alpha {(b - x)^p} = {( - 1)^n}\frac{{\Gamma (p + 1)}}{{\Gamma (p - \alpha  + 1)}}{(b - x)^{p - \alpha }}, \; 0 \le n - 1 \le \alpha  < n, \; p > n.
+\end{equation}
+\subsection{Gr\"{u}mwald-Letnikov (G-L) 分数阶导数}
+我们知道，整数阶导数的定义与函数的有限差分运算有如下关系
+\begin{equation}\label{eq2.10}
+  {f^{(n)}}(x) = \mathop {\lim }\limits_{h \to 0} \frac{{(\Delta _h^nf)(x)}}{{{h^n}}},
+\end{equation}
+其中
+$$(\Delta _h^lf)(x) = \sum\limits_{j = 0}^l {{{( - 1)}^j}\frac{{l(l - 1) \cdots (l - j + 1)}}{{j!}}} f(x - jh),$$
+将等式\;(\ref{eq2.10}) 中的整数~$n$ 换为非负实数~$\alpha$，即
+$$\Delta _h^\alpha f(x) = \sum\limits_{j = 0}^\infty  {{{( - 1)}^j}\frac{{\alpha (\alpha  - 1) \cdots (\alpha  - j + 1)}}{{j!}}} f(x - jh),$$
+得到~Gr\"{u}mwald-Letnikov 分数阶导数的定义。
+%\subsubsection*{标准的Gr\"{u}mwald-Letnikov 分数阶导数}
+\definibox{标准的~Gr\"{u}mwald-Letnikov 分数阶导数\;\ucite{Podlubny1999Fractional}}{
+ 设 ~$\alpha$ 为任意非负实数，满足~$n-1\leq \alpha <n $，$n$ 为一个正整数。$f(x)$ 为定义在区间~$\Omega = [a,b]$ ($a, b$ 为有限或者~$\infty$) 上的函数，称
+\begin{equation}\label{eq2.11}
+_a^GD_x^\alpha f(x) = \mathop {\lim }\limits_{{h_ + } \to 0} \frac{1}{{{h_ + }^\alpha }}\sum\limits_{j = 0}^{[(x - a)/{h_ + }]} {g_\alpha ^{(j)}f(x - jh)} ,
+\end{equation}
+为函数$~f(x)$ 的左侧$~\alpha$ 阶 ~Gr\"{u}mwald-Letnikov 分数阶导数。
+\begin{equation}\label{eq2.12}
+_x^GD_b^\alpha f(x) = \mathop {\lim }\limits_{{h_ - } \to 0} \frac{1}{{{h_ - }^\alpha }}\sum\limits_{j = 0}^{[(b - x)/{h_ - }]} {g_\alpha ^{(j)}f(x + jh)} .
+\end{equation}
+为函数$~f(x)$ 的右侧$~\alpha$ 阶 ~Gr\"{u}mwald-Letnikov 分数阶导数。其中$~x\in[a,b]$，记$~[z]$ 为 $~z$ 的整数部分（即$~[z]$ 是小于$~z$ 的最大整数）。}
+
+系数$\{~g_\alpha ^{(j)}\}$ 为标准的~Gr\"{u}nwald 权重
+\begin{equation}\label{eq2.13}
+  g_\alpha ^0 = 1,g_\alpha ^{(k)} = {( - 1)^k}\left( {\begin{array}{*{20}{c}}
+\alpha \\
+k
+\end{array}} \right) =  - g_\alpha ^{(k - 1)}\frac{{\alpha  - k + 1}}{k} \hspace{0.5cm} (k=1,2,3,...).
+\end{equation}
+\lemmabox{Gr\"{u}nwald 权重$~g_\alpha ^{(k)}$ 满足如下关系：}
+
+  (\MyRoman{1}) 当$~\alpha=1$ 时，
+  $$g_\alpha ^0 = 1,\quad g_\alpha ^{(1)} =  - 1, \quad g_\alpha ^{(2)} =g_\alpha ^{(3)} =\cdots=0;$$
+
+  (\MyRoman{2}) 当$~1<\alpha<2$ 时，
+  \begin{equation*}
+  \begin{split}
+  &g_\alpha ^0 = 1,\quad g_\alpha ^{(1)} =  - \alpha  < 0, \quad g_\alpha ^{(2)} >g_\alpha ^{(3)} >\cdots>0,\\
+  &\sum\nolimits_{k = 0}^\infty  {g_\alpha ^{(k)}}  = 0,\quad \sum\nolimits_{k = 0}^l {g_\alpha ^{(k)}}  < 0 (l=1,2,...);
+  \end{split}
+  \end{equation*}
+
+  (\MyRoman{3}) 当$~\alpha=2$ 时，
+    $$ g_\alpha ^0 = 1,\quad g_\alpha ^{(1)} =  - 2, \quad g_\alpha ^{(2)} =1,\quad g_\alpha ^{(3)} =g_\alpha ^{(4)}=\cdots=0.$$
+\proofbox{
+根据系数$~g_\alpha ^{(j)}$ 的定义式\;(\ref{eq2.13})，易知~(\MyRoman{1})和~(\MyRoman{3}) 条成立，下面证明第~(\MyRoman{2})条。
+由\;(\ref{eq2.13}) 式知
+}
+Riemann-Liouville 分数阶导数和~Gr\"{u}mwald-Letnikov分数阶导数之间存在一个等价关系：对于正实数$~\alpha$，$n-1<\alpha \leq n$，如果定义在区间$~[a,b]$ 上的函数$~f(x)$ 有直到$~n-1$ 阶的连续导数，并且$~{f^{(n)}}(x)$ 在区间$~[a,b]$ 上是可积的，那么此时~Riemann-Liouville 分数阶导数等价于~Gr\"{u}mwald-Letnikov分数阶导数\ucite{Liu2004}，详细的证明过程见参考文献\cite{Zhuang2009}。 在进行偏微分方程的数值离散时，Riemann-Liouville 分数阶导数与~Gr\"{u}mwald-Letnikov 分数阶导数之间的关系非常重要。在实际应用问题中，可以利用~Riemann-Liouville 分数阶导数来构造数学模型进行理论分析，然后利用~Gr\"{u}mwald-Letnikov 分数阶导数的定义进行数值模拟\ucite{Liu2004}。
+
+%\subsubsection*{移位的~Gr\"{u}mwald-Letnikov 分数阶导数}
+Meerschaert 等人\ucite{MM2004,MM2006}发现，采用标准的~Gr\"{u}mwald-Letnikov 分数阶导数定义获得的~Euler 隐式差分格式存在不稳定性。经过研究，Meerschaert 等人在2004年提出了移位的~Gr\"{u}mwald-Letnikov 分数阶导数，并对论证了应用该格式获得的~Euler显示和隐式差分格式都是无条件稳定的。因此，本文对空间分数阶导数的离散引进了移位的~Gr\"{u}mwald-Letnikov 分数阶导数， 该定理的详细证过程可参考文献\cite{MM2004}中的定理$~2.4$。
+\theorebox{\ucite{MM2004}
+假设$~f(x)\in L_1(\Omega)$ 且至少有$~[\alpha]+1$ 阶连续导数，则称
+\begin{equation}\label{eq2.14}
+  \begin{split}
+   _a^GD_x^\alpha f(x) = \mathop {\lim }\limits_{{h_ + } \to 0} \frac{1}{{{h_ + }^\alpha }}\sum\limits_{j = 0}^{[(x - a)/{h_ + }]} {g_\alpha ^{(j)}f\left[ {x - (j - p)h} \right]} ,  \\
+   _x^GD_b^\alpha f(x) = \mathop {\lim }\limits_{{h_ - } \to 0} \frac{1}{{{h_ - }^\alpha }}\sum\limits_{j = 0}^{[(b - x)/{h_ - }]} {g_\alpha ^{(j)}f(x + (j - p)h)} .
+  \end{split}
+\end{equation}
+为移位的左侧和右侧$~\alpha$ 阶~Gr\"{u}mwald-Letnikov 分数阶导数。其中$~p$ 是一个非负整数，称为位移量。考虑解的相容性，$p$ 的最优取值取为$~min\left| {p - {\alpha  \mathord{\left/
+ {\vphantom {\alpha  2}} \right.
+ \kern-\nulldelimiterspace} 2}} \right|$，当$~p=0$时，式\;(\ref{eq2.14}) 即为（标准的）G-L 公式\;(\ref{eq2.11})-(\ref{eq2.12})。}
+\subsection{Riesz 分数阶算子}
+根据本文的需要，本节通过~Gr\"{u}mwald-Letnikov 分数阶导数定义来定义~Riesz 分数阶导数（位势算子）。
+\definibox{Riesz 分数阶导数\ucite{Samko1993}} {
+设 ~$\alpha$ 为任意非负实数，满足~$n-1\leq \alpha <n $，$n$ 为一个正整数，$\alpha \neq 2k+1$，$k=0,1,...$。$f(x)$ 为定义在区间~$\Omega = [a,b]$ 上的函数，称
+\begin{equation}\label{eq2.15}
+\frac{{{\partial ^\alpha }}}{{\partial {{\left| x \right|}^\alpha }}}f(x) =  - \frac{1}{{2\cos ({{\pi \alpha } \mathord{\left/
+ {\vphantom {{\pi \alpha } 2}} \right.
+ \kern-\nulldelimiterspace} 2})}}\left[ {_a^GD_x^\alpha f(x) + _x^GD_b^\alpha f(x)} \right].
+\end{equation}
+为函数$~f(x)$ 的$~\alpha$ 阶~Riesz 分数阶导数。}
+
+从上述定义可知，Riesz 分数阶导数可看作是左~G-L 分数阶导数与右~G-L 分数阶导数的加权和，任意一点$~x$ 处的~Riesz 分数阶导数的值与函数$~F(x)$ 在$~x$ 点的左右两边的值都相关，这也是~Riesz 分数阶导数能反映材料的遗传性和记忆性特性所在。
+\section{分数阶导数的数值逼近}
+\subsection{R-L 分数阶的 G-L 逼近}
+\subsection{Riesz 分数阶导数的中心差商逼近}
+\section{本章小结}

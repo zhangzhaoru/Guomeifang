@@ -1,0 +1,93 @@
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{\protect\numberline{}{参考文献}}
+\addtolength{\itemsep}{-1.1em} % 缩小参考文献间的垂直间距
+\markboth{参考文献}{参考文献}
+\bibitem{FitzHugh1961}FitzHugh, Richard. Impulses and physiological states in theoretical models of nerve membrane[J]. Biophysical Journal, 1961, 1(6):445.
+\bibitem{Bernus2002}Bernus O, Wilders R, Zemlin C W, et al. A computationally efficient electrophysiological model of human ventricular cells[J]. Am J Physiol Heart Circ Physiol, 2002, 282(6):H2296.
+\bibitem{Ten2006}Ten Tusscher K H, Bernus O, Hren R, et al. Comparison of electrophysiological models for human ventricular cells and tissues[J]. Progress in Biophysics \& Molecular Biology, 2006, 90(1-3):326.
+\bibitem{Nickerson2010}Nickerson D P, Hunter P J. Cardiac cellular electrophysiological modeling[J]. Cardiac Electrophysiology Methods \& Models, 2010:135-158.
+\bibitem{Shuaiby2013}Shuaiby S M, Hassan M A, Sharkawy A B, et al. A finite element model for the electrical activity in human cardiac tissues[J]. J. Eco. Heal. Env, 2013, 1: 25-33.
+\bibitem{Groenendaal2015}Groenendaal W, Ortega F A, Kherlopian A R, et al. Cell-specific cardiac electrophysiology models[J]. Plos Computational Biology, 2015, 11(4):e1004242.
+\bibitem{Hodgkin1952}Hodgkin A L, Huxley A F. Currents carried by sodium and potassium ions through the membrane of the giant axon of Loligo.[J]. Journal of Physiology, 1952, 116(4):449.
+\bibitem{Hodgkin1952b}Hodgkin A L, Huxley A F. The components of membrane conductance in the giant axon of Loligo[J]. Journal of Physiology, 1952, 116(4):473.
+\bibitem{Hodgkin1990}Hodgkin A L, Huxley A F. A quantitative description of membrane current and its application to conduction and excitation in nerve[J]. Bulletin of Mathematical Biology, 1990, 52(1–2):25-71.
+\bibitem{Noble1962}Noble D. A modification of the Hodgkin-Huxley equations applicable to purkinje fibre action and pacemaker potentials[J]. Journal of Physiology, 1962, 160(2):317-352.
+\bibitem{Noble1998}Noble D, Varghese A, Kohl P, et al. Improved guinea-pig ventricular cell model incorporating a diadic space, IKr and IKs, and length- and tension-dependent processes.[J]. Canadian Journal of Cardiology, 1998, 14(1):123-34.
+\bibitem{Nagumo1962}Nagumo J, Arimoto S, Yoshizawa S. An active pulse transmission line simulating nerve axon[J]. Proceedings of the Ire, 1962, 50(10):2061-2070.
+\bibitem{Fitzhugh1969}Fitzhugh R. Mathematical models of excitation and propagation nerve[J]. 1969.
+\bibitem{Eulero1738}Eulero L. De progressionibus transcendentibus, sev quarum termini generales algebraice dari nequevent[J]. 1738.
+\bibitem{Laplace1995}Laplace P S M D. Theorie analytique des probabilites[J]. 1995, -1.
+\bibitem{Lacroix1797}Lacroix S F. Traité du calcul différentiel et du calcul intégral[M]. JBM Duprat, 1797.
+\bibitem{Baron1878}Baron Fourier J B J. The analytical theory of heat[M]. The University Press, 1878.
+\bibitem{Liouville1832}Liouville, Joseph. Mémoire sur quelques questions de géométrie et de mécanique, et sur un nouveau genre de calcul pour résoudre ces questions. 1832.
+\bibitem{Riemann1876}Riemann, Bernhard. Versuch einer allgemeinen auffassung der integration und differentiation. Gesammelte Werke 62.1876 (1876).
+\bibitem{Samko1993}Samko S G, Kilbas A A, Marichev O I. Fractional integrals and derivatives[J]. Theory and Applications, Gordon and Breach, Yverdon, 1993.
+\bibitem{Podlubny1999Fractional} Podlubny I, Fractional differential equations[C], New York, 1999.
+\bibitem{Mainardi1995}Mainardi F. Fractional diffusive waves in viscoelastic solids[J]. Nonlinear Waves In Solids, 1995, 137: 93-97.
+\bibitem{Amblard1996}Amblard F, Maggs A C, Yurke B, et al. Subdiffusion and anomalous local viscoelasticity in actin networks[J]. Physical Review Letters, 1996, 77(21): 4470.
+\bibitem{Benson2000}Benson D A, Wheatcraft S W, Meerschaert M M. Application of a fractional advection-dispersion equation[J]. Water Resources Research, 2000, 36(6): 1403-1412.
+\bibitem{Zhou2003}Zhou L, Selim H M. Application of the fractional advection-dispersion equation in porous media[J]. Soil Science Society of America Journal, 2003, 67(4): 1079-1084.
+\bibitem{Dentz2004}Dentz M, Cortis A, Scher H, et al. Time behavior of solute transport in heterogeneous media: transition from anomalous to normal transport[J]. Advances in Water Resources, 2004, 27(2): 155-173.
+\bibitem{Goychuk2006}Goychuk I, Heinsalu E, Patriarca M, et al. Current and universal scaling in anomalous transport[J]. Physical Review E, 2006, 73(2): 020101.
+\bibitem{Klages2008}Klages, Rainer, Günter Radons, and Igor M. Sokolov, eds. Anomalous transport: foundations and applications. John Wiley \& Sons, 2008.
+\bibitem{Bassani1995}Bassani J W, Yuan W, Bers D M. Fractional SR Ca release is regulated by trigger Ca and SR Ca content in cardiac myocytes[J]. American Journal of Physiology-Cell Physiology, 1995, 268(5): C1313-C1319.
+\bibitem{Taylor2013}Taylor C A, Fonte T A, Min J K. Computational fluid dynamics applied to cardiac computed tomography for noninvasive quantification of fractional flow reserve[J]. Journal of the American College of Cardiology, 2013, 61(22): 2233-2241.
+\bibitem{Bueno2014F}Bueno-Orovio A, Kay D, Grau V, et al. Fractional diffusion models of cardiac electrical propagation: role of structural heterogeneity in dispersion of repolarization[J]. Journal of the Royal Society Interface, 2014, 11(97):20140352.
+\bibitem{Mandelbrot1983}Mandelbrot B B, Pignoni R. The fractal geometry of nature[M]. New York: WH freeman, 1983.
+\bibitem{song2010}宋艳丽. 简谐噪声激励下FitzHugh-Nagumo神经元的动力学行为[J]. 物理学报, 2010, 59(4):2334-2338.
+\bibitem{Liuy2010}刘勇, 谢勇. 分数阶FitzHugh-Nagumo模型神经元的动力学特性及其同步[J]. 物理学报, 2010, 59(3):2147-2155.
+\bibitem{kang2011}康宏春, 陈冲, 刘启宽. 一类简化Fitzhugh-Nagumo方程的定性分析[J]. 河北科技大学学报, 2011, 32(3):208-211.
+\bibitem{shi2012}石丹青, 柴玉珍. Fitzhugh-Nagumo方程在非齐次边界条件下解的动力学分析[J]. 中北大学学报(自然科学版), 2012, 33(1):49-52.
+\bibitem{yu2012}于江, 王树声. FitzHugh-Nagumo方程的小振幅行波解[J]. 山西大学学报(自然科学版), 2012, 35(2):200-205.
+\bibitem{Liu2004}Liu F, Anh V, Turner I. Numerical solution of the space fractional Fokker-Planck equation [J]. Journal of Computational \& Applied Mathematics, 2004, 166(1):209-219.
+\bibitem{Liu2007}Liu F, Zhuang P, Anh V, et al. Stability and convergence of the difference methods for the space-time fractional advection-diffusion equation [J]. Applied Mathematics \& Computation, 2007, 191(1):12-20.
+\bibitem{Zhuang2006}Zhuang P, Liu F. Implicit difference approximation for the time fractional diffusion equation[J]. Journal of Applied Mathematics and Computing, 2006, 22(3): 87-99.
+\bibitem{Zhuang2009}Zhuang P, Liu F, Anh V, et al. Numerical methods for the variable-order fractional advection-diffusion equation with a nonlinear source term[J]. Siam Journal on Numerical Analysis, 2009, 47(3):1760-1781.
+\bibitem{Yang2010}Yang Q, Liu F, Turner I. Numerical methods for fractional partial differential equations with Riesz space fractional derivatives[J]. Applied Mathematical Modelling, 2010, 34(1): 200-218.
+\bibitem{Liu2012}Liu F, Turner I, Anh V, et al. A numerical method for the fractional Fitzhugh-Nagumo monodomain model[J]. Anziam Journal, 2012, 54:C608-C629.
+\bibitem{Liu2012A} Liu F, Chen S, Turner I, et al. Numerical simulation for two-dimensional Riesz space fractional diffusion equations with a nonlinear reaction term[J]. Central European Journal of Physics, 2013, 11(10):1221-1232.
+\bibitem{MM2004}Meerschaert M M, Tadjeran C. Finite difference approximations for fractional advection-dispersion flow equations[M]. Elsevier Science Publishers B. V. 2004.
+\bibitem{MM2006}Meerschaert M M, Scheffler H P, Tadjeran C. Finite difference methods for two-dimensional fractional dispersion equation[J]. Journal of Computational Physics, 2006, 211(1):249-261.
+\bibitem{Tadjeran2006}Tadjeran C, Meerschaert M M, Scheffler H P. A second-order accurate numerical approximation for the fractional diffusion equation[J]. Journal of Computational Physics, 2006, 213(1): 205-213.
+\bibitem{Sweilam2013}Sweilam N H, Nagy A M. Numerical solution of fractional wave equation using Crank-Nicholson method[J]. World Applied Sciences Journal, 2013, 13(13):71-74.
+\bibitem{Bueno2014Fourier}Bueno-Orovio A, Kay D, Burrage K. Fourier spectral methods for fractional-in-space reaction-diffusion equations[J]. Bit Numerical Mathematics, 2014, 54(4):937-954.
+\bibitem{Zeng2014A} Zeng F, Liu F, Li§ C, et al. A Crank-Nicolson ADI spectral method for a two-dimensional Riesz space fractional nonlinear reaction-diffusion equation[J]. Siam Journal on Numerical Analysis, 2014, 52(6):2599-2622.
+\bibitem{Ford2011}Ford N, Xiao J, Yan Y. A finite element method for time fractional partial differential equations[J]. Fractional Calculus and Applied Analysis, 2011, 14(3): 454-474.
+\bibitem{Feng2016}Feng L B, Zhuang P, Liu F, et al. Finite element method for space-time fractional diffusion equation[J]. Numerical Algorithms, 2016, 72(3): 749-767.
+\bibitem{Yang2017}Yang Z, Yuan Z, Nie Y, et al. Finite element method for nonlinear Riesz space fractional diffusion equations on irregular domains[J]. Journal of Computational Physics, 2017, 330: 863-883.
+\bibitem{Liu2005}Liu G R, Gu Y T. An introduction to meshfree methods and their programming[J]. Springer Berlin, 2005,10: 403-408.
+\bibitem{Liu2011}Liu Q, Gu Y T, Zhuang P, et al. An implicit RBF meshless approach for time fractional diffusion equations[J]. Computational Mechanics, 2011, 48(1): 1-12.
+\bibitem{Turner2002}Liu F, Turner I, Anh V. An unstructured mesh finite volume method for modelling saltwater intrusion into coastal aquifers[J]. Journal of Applied Mathematics and Computing, 2002, 9(2): 391-407.
+\bibitem{Zhuang2014}Liu F, Zhuang P, Turner I, et al. A new fractional finite volume method for solving the fractional diffusion equation[J]. Applied Mathematical Modelling, 2014, 38(15): 3871-3878.
+\bibitem{Mickens2000Applications}Mickens R E. Applications of nonstandard finite difference schemes[M]. World Scientific, 2000.
+\bibitem{mickens2002}Mickens R E. Nonstandard Finite Difference Schemes for Differential Equations[J]. Mathematics of Computation, 2002, 8(9):823-847.
+\bibitem{Mickens1990}Mickens R E. Smith A. Finite-difference models of ordinary differential equations: influence of denominator functions[J]. Journal of the Franklin Institute, 1990, 327(1):143-149.
+\bibitem{Mickens2005}Mickens R E. Advances in the applications of nonstandard finite difference schemes[M]. World Scientific, 2005.
+\bibitem{Mickens2003}Mickens R E. A nonstandard finite-difference scheme for the Lotka-Volterra system[M]. Elsevier Science Publishers B. V. 2003.
+\bibitem{Moghadas2004}Moghadas S M, Alexander M E, Corbett B D. A non-standard numerical scheme for a generalized Gause-type predator-prey model[J]. Physica D Nonlinear Phenomena, 2004, 188(1–2):134-151.
+\bibitem{Garba2011}Garba S M, Gumel A B, Lubuma M S. Dynamically-consistent non-standard finite difference method for an epidemic model[M]. Elsevier Science Publishers B. V. 2011.
+\bibitem{Xie2017}Xie W, Xu J, Cai L, et al. Dynamic preserving method with changeable memory length of fractional-order chaotic system[J]. International Journal of Non-Linear Mechanics, 2017, 92:59-65.
+\bibitem{Moaddy2011}Moaddy K, Momani S, Hashim I. The non-standard finite difference scheme for linear fractional PDEs in fluid mechanics[J]. Computers \& Mathematics with Applications, 2011, 61(4):1209-1216.
+\bibitem{Banerjee2005}Banerjee S, Cole J B, Yatagai T. Calculation of diffraction characteristics of sub wavelength conducting gratings using a high accuracy nonstandard finite-difference time-domain method[J]. Optical Review, 2005, 12(4): 274-280.
+\bibitem{Zhu2009}Zhu D, Kinoshita S, Cai D, et al. Investigation of structural colors in Morpho butterflies using the nonstandard-finite-difference time-domain method: Effects of alternately stacked shelves and ridge density[J]. Physical Review E Statistical Nonlinear \& Soft Matter Physics, 2009, 80(1):051924.
+\bibitem{Mickens1999}Mickens R E. Nonstandard finite difference schemes for reaction-diffusion equations[J]. Numerical Methods for Partial Differential Equations, 1999, 15(2): 201-214.
+\bibitem{Anguelov2005}Anguelov R, Kama P, Lubuma J. On non-standard finite difference models of reaction-diffusion equations[J]. Journal of Computational \& Applied Mathematics, 2005, 175(1):11-29.
+\bibitem{Price2010}Price W G, Wang Y, Twizell E H. A second-order, chaos-free, explicit method for the numerical solution of a cubic reaction problem in neurophysiology[J]. Numerical Methods for Partial Differential Equations, 2010, 9(3):213-224. 19(3):363-379.
+\bibitem{Chen2015}Chen Z, Gumel A B, Mickens R E. Nonstandard discretizations of the generalized Nagumo reaction-diffusion equation[J]. Numerical Methods for Partial Differential Equations, 2015,
+\bibitem{Moaddy2012}Moaddy K, Radwan A G, Salama K N, et al. The fractional-order modeling and synchronization of electrically coupled neuron systems[J]. Computers \& Mathematics with Applications, 2012, 64(10): 3329-3339.
+\bibitem{Chapwanya2014}Chapwanya M, Lubuma J M S, Mickens R E. Positivity-preserving nonstandard finite difference schemes for cross-diffusion equations in biosciences[J]. Computers \& Mathematics with Applications, 2014, 68(9): 1071-1082.
+\bibitem{Moaddy2011b}Moaddy K, Hashim I, Momani S. Non-standard finite difference schemes for solving fractional-order R\"{o}sssler chaotic and hyperchaotic systems[J]. Computers \& Mathematics with Applications, 2011, 62(3): 1068-1074.
+\bibitem{Nagy2014}Nagy A M, Sweilam N H. An efficient method for solving fractional Hodgkin-Huxley model[J]. Physics Letters A, 2014, 378(30): 1980-1984.
+\bibitem{bai2004}白乙拉, 刘播, 冯恩民. 椭圆型方程边值问题的拟多重网格预处理迭代法[J]. 辽宁大学学报~(自然科学版), 2004, 31(3):234-237.
+\bibitem{ge2006}葛永斌, 田振夫, 吴文权. 三维对流扩散方程非等距网格上的四阶紧致格式及其多重网格方法[J]. 工程热物理学报, 2006, 27(5):838-840.
+\bibitem{ge2009}葛永斌, 曹富军, 马廷福. 三维对流扩散方程的多重网格算法研究[J]. 计算机工程与应用, 2009, 45(13):54-58.
+\bibitem{chai1999}柴玉珍, 秦效英, 王淑丽. 二重网格方法的应用简例[J]. 太原理工大学学报, 1999, 30(6):666-668.
+\bibitem{Sachse2004} Sachse F B. Computational cardiology[M]. Springer Berlin Heidelberg, 2004.
+\bibitem{Valdes2007}Valdes-Parada F J, Ochoa-Tapia J A, Alvarez-Ramirez J. Effective medium equations for fractional Fick's law in porous media[J]. Physica A Statistical Mechanics \& Its Applications, 2007, 373(C):339-353.
+\bibitem{Johnson1987}Johnson C. Numerical solution of partial differential equations by the finite element method[M]. Cambridge University Press, 1987.
+\bibitem{Briggs2011A}Briggs W L, Henson V E, Mccormick S F. A multigrid tutorial: second edition[M]. Society for Industrial and Applied Mathematics, 2000.
+\bibitem{Mickens1999b}Mickens R E. Discretizations of nonlinear differential equations using explicit nonstandard methods[J]. Journal of Computational \& Applied Mathematics, 1999, 110(1):181-185.
+\bibitem{Brandt2011}Brandt A, Livne O. Multigrid techniques[M]. Society for Industrial and Applied Mathematics, 2011.
+\bibitem{Tusscher2004}Ten Tusscher K. H. W. J, Noble D, Noble P J, et al. A model for human ventricular tissue[J]. American Journal of PPhysiology. Heart and Circulatory Physiology, 2004, 286(4):H1573.
+\bibitem{wang2017} Li C, Wang Y, Gao H, et al. A mathematical model for active contraction in healthy and failing myocytes and left ventricles[J]. Plos One, 2017, 12(4).
+\end{thebibliography}

@@ -1,0 +1,482 @@
+%==============第四章节内容==================
+\chapter{分数阶~FHN 模型的差分方法}\label{chap4}
+本章主要研究~Riesz 型空间分数阶~FHN 模型的差分方法，包括标准有限差分方法\;(SFDM) 和非标准有限差分方法\;(NSFDM)。首先利用算子分离技巧对分数阶~FHN 单域模型进行解耦，在每个时间层上先求解关于跨膜电势~$u$ 的二维~Riesz 空间分数阶非线性反应-扩散方程；然后再求解关于恢复变量~$v$ 的常微分方程。目前已有很多成熟方法能够有效地求解常微分方程，所以本章的重点是分析二维~Riesz 空间分数阶非线性反应-扩散方程的差分方法。
+
+本章主要分为两部分，第一部分重点介绍了有限区域上的二维~Riesz 空间分数阶非线性反应-扩散方程稳定且收敛的标准有限差分方法\ucite{Liu2012}。第二部分主要介绍了有限区域上的非标准有限差分方法，并给出了改进的非标准有限差分隐式格式，最后论证了该格式的稳定性和收敛性。
+\section{分数阶~FHN 模型的标准有限差分方法}\label{FDM}
+本文首先采用文献\cite{Liu2012} 中解耦的数值技巧对分数阶~FHN 模型进行解耦。假设~$\alpha_1 =\alpha_2=\alpha$ (当~$\alpha_1 \neq \alpha_2$ 时, 该方法仍然适用)，记时间层~$t=t_n$ 上的值为~$u_n, v_n$，通过下列两步分别计算出时间层~$t=t_{n+1}$ 上的值~$u_{n+1}, v_{n+1}$。
+
+第一步：通过二维~Riesz 空间分数阶非线性反应-扩散方程：
+\begin{equation}\label{eq4.1}
+\begin{split}
+&\frac{{\partial {{u}}}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + {I_{ion}}({u_n},{v_n}),\\
+{I_{ion}} = \frac{{{C_2}}}{{{u_{amp}}}}&(u - {u_{rest}})v + \frac{{{C_1}}}{{u_{amp}^2}}(u - {u_{rest}})(u - {u_{th}})(u - {u_{peak}}).
+\end{split}
+\end{equation}
+求解时间层~$t=t_{n+1}$ 上的电势值~$u_{n+1}$。
+
+第二步：利用已知的~$u_{n+1}$ 和~$v_n$ 值，通过常微分方程：
+\begin{equation}\label{eq4.2}
+ \frac{{\partial v}}{{\partial t}} = au_{n+1} - bv_n + c.
+\end{equation}
+求解得时间层~$t=t_{n+1}$ 上的恢复变量值~$v_{n+1}$。
+
+对于第二步中常微分方程的求解方法现已非常成熟。接下来，本节主要详细阐述第一步中分数阶偏微分方程的数值求解过程，即解耦之后的二维~Riesz 空间分数阶~FHN 模型的差分方法
+\begin{equation}\label{eq4.3}
+ \frac{{\partial {{u}}}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + f(u,x,y,t),
+\end{equation}
+初始条件为
+\begin{equation}\label{eq4.4}
+ u(x,y,0) = \phi (x,y) \hspace{0.5cm} 0\leq x\leq D_x, 0\leq y\leq D_y,
+\end{equation}
+齐次~Dirichlet 边界条件为
+\begin{equation}\label{eq4.5}
+\begin{split}
+  u(0,y,t) = u({D_x},y,t) =0;\\
+  u(x,0,t) = u(0,{D_y},t) = 0.
+\end{split}
+\end{equation}
+其中~$1 < {\alpha _1},{\alpha _2} \le 2$，扩散系数~$k_x,k_y>0$，非线性函数~$f(u,x,y,t)$ 满足拉格朗日中值定理~(光滑性) 条件，根据~Riesz 分数阶导数的定义式\;(\ref{eq2.15}) 可知，$x$ 方向的~Riesz 分数阶导数~$\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}}$ 为
+$$\frac{{{\partial ^{\alpha_1} }u}}{{\partial {{\left| x \right|}^{\alpha_1} }}} =  - \frac{1}{{2\cos (\pi {\alpha_1} /2)}}\left[ {_a^GD_x^{\alpha_1} u + _x^GD_b^{\alpha_1} u} \right];$$
+同理，$y$-方向的~Riesz 分数阶导数~$\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}}$ 为
+$$\frac{{{\partial ^{\alpha_2} }u}}{{\partial {{\left| y \right|}^{\alpha_2} }}} =  - \frac{1}{{2\cos (\pi {\alpha_2} /2)}}\left[ {_a^GD_y^{\alpha_2} u + _y^GD_b^{\alpha_2} u} \right].$$
+\theorebox{(拉格朗日中值定理)}{
+若函数~$f(x)$ 满足下列条件：(1) 在闭区间~$[a,b]$ 上连续；(2) 在开区间~$(a,b)$ 内可导。
+则在~$(a,b)$ 内至少存在一点~$\xi$，使得}\label{Lag}
+$$f(b)-f(a)=f'(\xi)(b-a).$$
+\subsection{差分格式的建立}
+本节主要介绍二维~Riesz 空间分数阶非线性反应-扩散模型\;(\ref{eq4.3})-(\ref{eq4.5}) 的标准有限差分格式的建立。标准有限差分法求解分数阶偏微分方程的基本思路及步骤：
+
+Step 1. 区域剖分：将定解区域~$\Omega$ 离散化为网格离散节点的集合；
+
+Step 2. 微分方程的离散：将分数阶偏微分方程中的连续函数用网格上的离散函数代替，采用移位的~G-L 分数阶导数定义\;(\ref{eq2.14})代替微分方程中的分数阶导数，得到标准有限差分格式；
+
+Step 3. 求解差分格式：计算差分离散格式得到待求解变量在各离散点处离散值，(隐格式为求解线性代数方程组)；
+
+Step 4. 离散系统的性态分析：分析讨论所得差分格式的稳定性及其数值近似解对于原微分方程解的收敛性。
+
+首先对求解的二维区域~$\Omega=[a,b]\times[c,d]$ 及时间段~$[0,T]$ 进行网格剖分，对正整数~$m_1$，~$m_2$ 和~$N$，令~$h_x=(b-a)/m_1$ 和~$h_y=(d-c)/m_2$ 分别为~$x$-方向和~$y$- 方向的空间网格步长，则有~$x_i=ih_x$\;$(i=0,1,...,m_1)$，$y_j=jh_y$\;$(j=0,1,...,m_2)$。令~$\tau=T/N$ 为时间方向的步长，则有~$t_k=k\tau$\;$(k=0,1,...,n)$。 定义~$u_{i,j}^k$ 为~$u(x,y,t)$ 在 ~$x=x_i,y=y_j,t=t_n$ 处的数值解。初始条件为~$u_{i,j}^0 = \phi ({x_i},{y_j})$。
+
+在二维~Riesz 分数阶非线性反应-扩散方程\;(\ref{eq4.3}) 的空间方向，利用位移的~G-L 分数阶导数格式\;(\ref{eq2.14})，可获得~$x$ 方向上的~Riesz 空间分数阶导数的离散格式为：
+\begin{equation}\label{eq4.6}
+\begin{split}
+{_a^GD_x^\alpha u{|_{({x_i},{y_j},{t_{n+1}})}}} = \frac{1}{{{{({h_x})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i - l + 1,}}{y_j},{t_{n+1}})}  + O({h_x}), \\
+{_x^GD_b^\alpha u{|_{({x_i},{y_j},{t_{n+1}})}}} = \frac{1}{{{{({h_x})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i + l - 1,}}{y_j},{t_{n+1}})}  + O({h_x}).
+\end{split}
+\end{equation}
+同样地，在~$y$ 方向上的~Riesz 空间分数阶导数的离散格式为：
+\begin{equation}\label{eq4.7}
+\begin{split}
+_a^GD_x^\alpha u{|_{({x_i},{y_j},{t_{n + 1}})}} = \frac{1}{{{{({h_y})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _1}}^{(l)}u({x_{i,}}{y_{j - l + 1}},{t_{n + 1}})}  + O({h_y}),\\
+_x^GD_b^\alpha u{|_{({x_i},{y_j},{t_{n + 1}})}} = \frac{1}{{{{({h_y})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _1}}^{(l)}u({x_{i,}}{y_{j + l - 1}},{t_{n + 1}})}  + O({h_y}).
+\end{split}
+\end{equation}
+
+在二维~Riesz 分数阶非线性反应-扩散方程\;(\ref{eq4.3}) 的时间方向，利用欧拉向后差分格式有
+\begin{equation}\label{eq4.8}
+\frac{{\partial u}}{{\partial t}}{{\rm{|}}_{({x_i},{y_j},{t_n})}} = \frac{1}{\tau }(u_{i,j}^{n + 1} - u_{i,j}^n) + O(\tau ).
+\end{equation}
+把式\;(\ref{eq4.6})-(\ref{eq4.8}) 带入式\;(\ref{eq4.3}) 中可得~Riesz 分数阶非线性反应-扩散方程的离散格式：
+\begin{equation}\label{eq4.9}
+\begin{split}
+&\frac{{u({x_i},{y_j},{t_{n + 1}}) - u({x_i},{y_j},{t_n})}}{\tau}\\
+ =  & - {r_1}\left[ {\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i - l + 1}},{y_j},{t_{n + 1}}) + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i + l - 1}},{y_j},{t_{n + 1}})} } } \right]\\
+&  - {r_2}\left[ {\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)}u({x_i},{y_{j - l + 1}},{t_{n + 1}}) + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}u({x_i},{y_{j + l - 1}},{t_{n + 1}})} } } \right]\\
+& + f(u({x_i},{y_j},{t_n}),{x_i},{y_j},{t_n}) + {R_{i,j,n + 1}}.
+\end{split}
+\end{equation}
+其中\\
+$\quad 1\leq i\leq m_1$，$1\leq j\leq m_2$，$1\leq n\leq N$，系数~ $r_1 = {k_x}{c_{{\alpha _1}}}{({h_x})^{{-\alpha _1}}}$，$r_2 = {k_y}{c_{{\alpha _2}}}{({h_y})^{{-\alpha _2}}}$，式中~$c_{\alpha}=1/[2cos(\pi\alpha/2)]<0 $，分数阶导数的取值范围为~$1 < {\alpha _1},{\alpha _2} \le 2$，扩散系数~$k_x,k_y>0$。 存在正常数~$c$，使得局部截断误差~${{R_{i,j,n + 1}}}$ 满足
+$$\left| {{R_{i,j,n + 1}}} \right| \le c({h_x} + {h_y} + \tau ).$$
+在方程\;(\ref{eq4.9}) 中略去小量项~${R_{i,j,n + 1}}$，并用数值解~$u_{i,j}^n$ 替代精确解~$u({x_i},{y_j},{t_n})$，令~$f(u({x_i},{y_j},{t_n}),{x_i},{y_j},{t_n}) \equiv f_{i,j}^n$。可得二维~Riesz 空间分数阶非线性反应-扩散方程\;(\ref{eq4.3})-(\ref{eq4.5}) 的隐式离散格式：
+\begin{equation}\label{eq4.10}
+\begin{split}
+u_{i,j}^{n + 1} &+ \tau {r_1}\left[ {\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u_{i - l + 1,j}^{n + 1} + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u_{i + l - 1,j}^{n + 1}} } } \right]\\
+& + \tau {r_2}\left[ {\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j - l + 1}^{n + 1} + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j + l - 1}^{n + 1}} } } \right]
+= u_{i,j}^n + \tau f_{i,j}^n,
+\end{split}
+\end{equation}
+相应的初边值条件离散格式为：
+\begin{equation}\label{eq4.11}
+\begin{split}
+   &u_{i,j}^0 = {\phi _{i,j}} = \phi ({x_i},{y_j}), \\
+   u_{0,j}^n &= u_{{m_1},j}^n = u_{i,0}^n = u_{i,{m_2}}^n = 0.
+\end{split}
+\end{equation}
+
+通过整理，方程组\;(\ref{eq4.10})-(\ref{eq4.11}) 可写成如下的矩阵-向量形式
+\begin{equation}\label{eq4.12}
+{A}{{\bf{u}}^{n}} = {{\bf{b}}^{n}},
+\end{equation}
+其中 ${\bf{u}}^{n} = (u_{1,1}^n,u_{1,2}^n,...,u_{1,{m_2} - 1}^n,u_{2,1}^n,...,u_{{m_1} - 1,{m_2} - 1}^n)$，${{\bf{b}}^{n}}$ 是一个包含已知初始边界条件、源项值和前~n 层~$u$ 值的~$(m_1-1)(m_2-1)$ 维的列向量，于是整个问题最终归结为线性代数方程组\;(\ref{eq4.12}) 的求解。由于求解区域一般比较复杂，网格剖分较细导致系数矩阵的量级非常大，又因为分数阶导数具有非局部性，因此系数矩阵~$A$ 是一个~$(m_1-1)(m_2-1)\times (m_1-1)(m_2-1)$ 维的大型稠密矩阵。刘发旺等人使用的~Gauss-Seidel 迭代法\ucite{Liu2012,Johnson1987} 计算速度非常慢，代价高昂。结合多重网格加速技术在大型科学计算中的应用优势及式\;(\ref{eq4.12}) 中系数矩阵~$A$ 的特点，本文引进了多重网格算法\ucite{Briggs2011A}。 数值结果表明该方法相比与传统的迭代方法能极大的提高计算效率，节约计算成本。
+
+接下来我们主要对隐式差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 的性态做严格的讨论分析。离散系统的性态分析主要包括该隐式差分格式的稳定性及其数值近似解对于原分数阶偏微分方程\;(\ref{eq4.3})-(\ref{eq4.5}) 解的收敛性。在论证隐式差分格式的稳定性前，我们首先引入下列稳定性引理。
+\lemmabox{
+如果对于给定的~$\eta  > 0$，存在~$\delta$，使得当~$||{E^0}|{|_\infty } \le \delta $ 时，对一切的~$n = 0,1,2, \cdots ,N(\frac{T}{\tau })$，都有
+$${\left\| {{E^n}} \right\|_\infty } \le \eta,$$}\label{stalemma}
+则说差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 是稳定的。
+\subsection{稳定性分析}
+首先我们分析讨论差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 的稳定性。假设~$\tilde u_{i,j}^n$ 是式\;(\ref{eq4.10})-(\ref{eq4.11}) 的逼近解，$\varepsilon _{i,j}^n = u_{i,j}^n - \tilde u_{i,j}^n$ 为相应的误差，并且~${E^n} = (\varepsilon _{1,1}^n,\varepsilon _{2,1}^n, \cdots ,\varepsilon _{{m_1} - 1,{m_2} - 1}^n)$，令~$\left| {\varepsilon _{{i_0},{j_0}}^n} \right| = \mathop {\max }\limits_{1 \le i \le {m_1} - 1,1 \le j \le {m_2} - 1} \left| {\varepsilon _{i,j}^n} \right| = {\left\| {{E^n}} \right\|_\infty }$。
+
+根据式\;(\ref{eq4.10})-(\ref{eq4.11})，误差~$\varepsilon _{i,j}^n$ 满足
+\begin{equation}\label{eq4.13}
+\begin{split}
+\varepsilon _{i,j}^n &+ \tau {r_1}\left[ {\sum\limits_{l = 0}^{i + 1} {g_\alpha ^{(l)}\varepsilon _{i - l + 1,j}^n + } \sum\limits_{l = 0}^{{m_1} - i + 1} {g_\alpha ^{(l)}\varepsilon _{i + l - 1,j}^n} } \right]\\
+&+ \tau {r_2}\left[ {\sum\limits_{l = 0}^{j + 1} {g_\alpha ^{(l)}\varepsilon _{i,j - l + 1}^n + } \sum\limits_{l = 0}^{{m_2} - j + 1} {g_\alpha ^{(l)}\varepsilon _{i,j + l - 1}^n} } \right]\\
+&= \varepsilon _{i,j}^{n - 1} + \tau f(u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}}) - \tau f(\tilde u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}}).
+\end{split}
+\end{equation}
+由引理\;\ref{GLW} 可知，当$~1<\alpha \leq 2$ 时有~$\sum\nolimits_{j = 0}^l {g_\alpha ^{(j)}}  < 0\;(l>1)$，结合式\;(\ref{eq4.13}) 有
+\begin{equation*}
+\begin{split}
+||{E^n}|{|_\infty } &\le \left| {\varepsilon _{{i_0},{j_0}}^n + \tau r\left[ {\sum\limits_{l = 0}^{{i_0} + 1} {g_\alpha ^{(l)}\varepsilon _{{i_0} - l + 1,{j_0}}^n + } \sum\limits_{l = 0}^{{m_1} - {i_0} + 1} {g_\alpha ^{(l)}\varepsilon _{{i_0} + l - 1,{j_0}}^n} } \right]} \right.\\
+&\left. { + \tau {r_2}\left[ {\sum\limits_{l = 0}^{{j_0} + 1} {g_\alpha ^{(l)}\varepsilon _{{i_0},{j_0} - l + 1}^n + } \sum\limits_{l = 0}^{{m_2} - {j_0} + 1} {g_\alpha ^{(l)}\varepsilon _{{i_0},{j_0} + l - 1}^n} } \right]} \right|\\
+&= \left| {\varepsilon _{{i_0},j{}_0}^{n - 1} + \tau f(u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}}) - \tau f(\tilde u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}})} \right|\\
+&\le \left| {\varepsilon _{{i_0},{j_0}}^{n - 1}} \right| + \tau \left| {f(u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}}) - f(\tilde u_{i,j}^{n - 1},{x_i},{y_j},{t_{n - 1}})} \right|\\
+&\le \left| {\varepsilon _{{i_0},{j_0}}^{n - 1}} \right| + \tau {L_{n - 1}}\left| {u_{i,j}^{n - 1} - \tilde u_{i,j}^{n - 1}} \right| = \left| {\varepsilon _{{i_0},{j_0}}^{n - 1}} \right| + \tau {L_{n - 1}}\left| {\varepsilon _{i,j}^{n - 1}} \right|\\
+&\le \left| {\varepsilon _{{i_0},{j_0}}^{n - 1}} \right| + \tau {L_{n - 1}}\left| {\varepsilon _{{i_0},{j_0}}^{n - 1}} \right| = (1 + \tau {L_{n - 1}})||{E^{n - 1}}|{|_\infty }\\
+&\le \mathop \prod \limits_{k = 0}^{n - 1} (1 + \tau {L_k})||{E^0}|{|_\infty }\\
+&\le {(1 + \tau {L_{\max }})^n}||{E^0}|{|_\infty }\\
+&\le {e^{n\tau {L_{\max }}}}||{E^0}|{|_\infty }\\
+&\le {e^{{L_{\max }}T}}||{E^0}|{|_\infty }\\
+& = C||{E^0}|{|_\infty }.
+\end{split}
+\end{equation*}
+其中~C 是不依赖~$h_x,h_y$ 和~$\tau$ 的正数，结合引理\;\ref{stalemma} 可得到下列稳定性定理。
+\theorebox{(稳定性)}{
+隐式差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 是无条件稳定的，并且有
+$${\left\| {{E^n}} \right\|_\infty } \le C{\left\| {{E^0}} \right\|_\infty },$$
+其中~C 是一个与~$h_x,h_y$ 和~$\tau$ 都无关的正数。}
+\subsection{收敛性分析}
+本节主要分析论证隐式差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 的收敛性。
+
+假设问题\;(\ref{eq4.3})-(\ref{eq4.5}) 有一个光滑解~$u(x_i,y_j,t_n)$，$u_{i,j}^n$ 是隐式差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 的数值解。定义误差~$\eta _{i,j}^n = u({x_i},{y_j},{t_n}) - u_{i,j}^n$，${Y^n} = (\eta _{1,1}^n,\eta _{2,1}^n, \cdots ,\eta _{{m_1} - 1,{m_2} - 1}^n)$，则误差~$\eta _{i,j}^n$ 满足
+\begin{equation}\label{eq4.14}
+\begin{split}
+\eta _{i,j}^n & + \tau {r_1}\left[\sum\limits_{l = 0}^{i + 1} {g_\alpha ^{(l)}\eta _{i - l + 1,j}^n + } \sum\limits_{l = 0}^{{m_1} - i + 1} {g_\alpha ^{(l)}\eta _{i + l - 1,j}^n} \right]\\
+&+\tau{r_2}\left[ {\sum\limits_{l = 0}^{j + 1} {g_\alpha ^{(l)}\eta _{i,j - l + 1}^n + } \sum\limits_{l = 0}^{{m_2} - j + 1} {g_\alpha ^{(l)}\eta _{i,j + l - 1}^n} } \right]\\
+&= \eta _{i,j}^{n - 1} + \tau f(u({x_i},{y_j},{t_{n - 1}}),{x_i},{y_j},{t_{n - 1}})\\
+&- \tau f(u_{i,j}^n,{x_i},{y_j},{t_{n - 1}}) + {R_{i,j,n}}.
+\end{split}
+\end{equation}
+由引理\;\ref{GLW} 可知，当$~1<\alpha<2$ 时有~$\sum\nolimits_{j = 0}^l {g_\alpha ^{(j)}}  < 0\;(l>1)$ 成立。结合误差表达式\;(\ref{eq4.14})，可得
+\begin{equation*}
+\begin{split}
+||{Y^n}|{|_\infty } &\le \left| {\eta _{{i_0},{j_0}}^n{\rm{ + }}\tau {r_1}\left[ {\sum\limits_{l = 0}^{{i_0} + 1} {g_\alpha ^{(l)}\eta _{{i_0} - l + 1,{j_0}}^n + } \sum\limits_{l = 0}^{{m_1} - {i_0} + 1} {g_\alpha ^{(l)}\eta _{{i_0} + l - 1,{j_0}}^n} } \right]} \right.\\
+&\left. {{\rm{ + }}\tau {r_2}\left[ {\sum\limits_{l = 0}^{{j_0} + 1} {g_\alpha ^{(l)}\eta _{{i_0},{j_0} - l + 1}^n + } \sum\limits_{l = 0}^{{m_2} - {j_0} + 1} {g_\alpha ^{(l)}\eta _{{i_0},{j_0} + l - 1}^n} } \right]} \right|\\
+&= |\eta _{{i_0},{j_0}}^{n - 1} + \tau f(u({x_{{i_0}}},{y_{{j_0}}},{t_{n - 1}}),{x_{{i_0}}},{y_{{j_0}}},{t_{n - 1}})\\
+&- \tau f(u_{{i_0},{j_0}}^n,{x_{{i_0}}},{y_{{j_0}}},{t_{n - 1}}) + {R_{{i_0},{j_0},n}}\\
+&\le (1 + \tau {L_{n - 1}})||{Y^{n - 1}}|{|_\infty } + {C^*}({\tau ^2} + \tau {h_x} + \tau {h_y})\\
+&\le (1 + \tau {L_{\max }})||{Y^{n - 1}}|{|_\infty } + {C^*}({\tau ^2} + \tau {h_x} + \tau {h_y})\\
+&\le {(1 + \tau {L_{\max }})^n}||{Y^0}|{|_\infty } + \sum\limits_{k = 0}^{n - 1} {{{\left( {1 + \tau {L_{\max }}} \right)}^k}} {C^*}({\tau ^2} + \tau {h_x} + \tau {h_y})\\
+&\le {(1 + \tau {L_{\max }})^n}n\tau {C^*}({\tau ^2} + {h_x} + {h_y})\\
+&= C(\tau  + {h_x} + {h_y})
+\end{split}
+\end{equation*}
+对于任意的~$x,y$ 和~$t$，如果~$h_x,h_y,\tau \rightarrow 0$，即~$(i{h_x},j{h_y},n\tau ) \to (x,y,t)$，有~$u_{i,j}^n \to u(x_i,y_j,t_n)$，于是得到下列收敛性定理。
+\theorebox{(收敛性)}{
+隐式差分格式\;(\ref{eq4.10})-(\ref{eq4.11}) 是无条件收敛的，即对于一切的~$i,j,n$, 存在与~$h_x,h_y,\tau$ 无关的正常数~C，使得}\label{convergence1}
+$$\left| {u({x_i},{y_j},{t_n}) - u_{i,j}^n} \right| \le C(\tau  + {h_x} + {h_y}).$$
+\section{分数阶~FHN 模型的非标准有限差分方法}\label{NSFDM}
+接下来主要讨论二维~Riesz 空间分数阶非线性反应-扩散模型\;(\ref{eq4.3})-(\ref{eq4.5}) 的非标准有限差分法。首先根据非标准有限差分方法的基本理论，建立模型\;(\ref{eq4.3})-(\ref{eq4.5}) 的非标准有限差分隐格式。然后论证了该隐格式是稳定且收敛的。
+\subsection{非标准有限差分方法的基本理论}
+构造非标准有限差分格式的基本思想是使用分母函数~(又称步长函数) 去替代标准差分格式中的步长值，使得非标准差分格式在网格点处的数值解与精确解接近。随着分母函数选取的不同，构造的非标准有限差分格式也多种多样，Mickens 就其在研究过程中发现的特征，总结并提取出了构造非标准有限差分格式的基本准则\ucite{Mickens2000Applications} 如下:
+
+(1) 离散导数的阶数应当与原微分方程中对应导数的阶数相等。
+
+(2) 离散导数的分母函数是步长的函数，并且该分母函数的表达式必须比传统离散格式中的步长更复杂。
+
+{\hei 注解：}一阶导数的离散格式如下所示
+$$\frac{{{{du}}}}{{dt}} \to \frac{{{u_{k + 1}} - \psi (\Delta t){u_k}}}{{\varphi (\Delta t)}},$$
+其中~$ \psi (\Delta t)$ 和~$\varphi (\Delta t)$ 满足
+$$\psi (\Delta t)= 1 + O(\Delta {t^2}),\;\varphi (\Delta t) = \Delta t+ O(\Delta {t^2}).$$
+例如
+$$\psi (\Delta t)= cos(\lambda \Delta t),\;\varphi (\Delta t) =\frac{{1 - {e^{ - \lambda \Delta t}}}}{\lambda }.$$
+$\lambda$ 是原微分方程中的参数。
+
+(3) 微分方程的非线性项应当离散为非局部表达式。
+
+{\hei 注解：} 例如非线性项~$u^2$ 可由表达式~$u_{k+1}u_k$ 替代。更多形式的表达式如下\ucite{Mickens1999b}
+$$u\rightarrow 2u_k-u_{k+1}$$
+$$u^2\rightarrow \left( {\frac{{{u_{k - 1}} + {u_k} + {u_{k + 1}}}}{3}} \right){u_k}$$
+$$u^2\rightarrow 2u_k^2-u_ku_{k+1}$$
+$$u^3\rightarrow  \left( {\frac{{{u_{k - 1}} + {u_{k + 1}}}}{2}} \right){u_k^2}$$
+$$u^3\rightarrow2u_k^3-u_k^2u_{k+1}$$
+
+(4) 原微分方程的解满足的特殊条件，构造的差分格式的解也要满足。
+
+(5) 对于具有~$N(N\geq3)$ 项的微分方程组，可先分别构造~$M( M\leq N)$ 个子微分方程的有限差分格式再组合成为一个相容的格式。
+
+上述基本准则为构造微分方程的非标准有限差分格式提供了关键性指导。对于一个给定的微分方程，该基本准则允许构造多个非标准有限差分格式，也就是说，非标准有限差分格式不是唯一的。另外，构造的非标准差分格式是不精确的，但是能得到比传统差分格式更优的数值结果。下面我们通过构造一阶标量常微分方程的非标准有限差分格式，了解以上六个基本准则在构造微分方程的非标准有限差分格式中的应用。
+
+考虑标量一阶常微分方程
+\begin{equation}\label{eq4.15}
+\frac{{du}}{{dt}} = f(u).
+\end{equation}
+为了构造式\;(\ref{eq4.15}) 的非标准差分格式，首先需要选择分母函数~$\varphi (\Delta t)$ 使得满足准则~(2) 的离散格式
+\begin{equation}\label{eq4.16}
+\frac{{{{du}}}}{{dt}} = \frac{{{u_{k + 1}} - {u_k}}}{{\varphi (\Delta t)}},
+\end{equation}
+成立。假设方程~$f(\bar{u})=0$ 有~$I$ 个实根~$\bar{u}^{(i)}\;(i=1,2,\ldots I)$，$I$ 可以是无界的。定义~$R_i$ 为
+\begin{equation}\label{eq4.17}
+{R_i} \equiv \frac{{df}}{{du}}\left| {_{u = {{\bar u}^{(i)}}}} \right.,
+\end{equation}
+其中~$\left\{ {{{\bar u}^{(i)}};\;i = 1,2, \ldots ,I} \right\}$ 是一系列的固定点，取~$R^*$ 为
+\begin{equation}\label{eq4.18}
+{R^*} = max\{ \left| {{R_i}} \right|;i = 1,2, \ldots ,I\} ,
+\end{equation}
+特别地，$\varphi (\Delta t)$ 具有如下表达形式\ucite{Mickens1990}
+\begin{equation}\label{eq4.19}
+\varphi (\Delta t,{R^*}) = \frac{{1 - {e^{ - {R^*}\Delta t}}}}{{{R^*}}},
+\end{equation}
+并且$\varphi (\Delta t)$ 具有如下性质
+$$\varphi (\Delta t,{R^*}) = \Delta t - {R^*}{\Delta t^2}+O({{R^*}^2}{\Delta t^3}),$$
+$$0<\varphi (\Delta t,{R^*})<\frac{1}{{{R^*}}}.$$
+由此易知对导数的逼近采用离散格式\;(\ref{eq4.16}) 满足~Mickens准则~(1)。可以对式\;(\ref{eq4.19}) 进行物理解释，从而对其所代表的内容具有深刻的理解。
+%当式\;(\ref{eq4.14}) 中的~$f(u)=u^2(1-u)$ 时即是基本的~combustion 模型，计算~$f(u)=0$ 可得其三个固定点
+%$$\bar{u}^(1)=\bar{u}^(2)=0,\;\bar{u}^(3)=1.$$
+\subsection{改进的非标准有限差分方法}
+对于非线性项的处理，需要满足~Mickens 准则~(3)。由于实际工程问题中的非线性项表达式结构非常复杂，构造的非标准差分格式又存在不唯一性，因此构造合适的非线性项离散格式变得十分困难。除了~Mickens 提出的非线性项离散格式以外，本文对其进行了改进，提出了采用~Taylor 展开式来构造微分方程\;(\ref{eq4.15}) 的非线性右端项~$f(u)$ 的离散格式\ucite{Yang2017}。
+
+假设非线性右端项~$f(u)$ 满足~$f(u)\in C^1(D)$ ($D$ 是一个有限闭区域)，则有~Taylor 展式：
+$$f(u) = f({u_0}) + \frac{{f'({u_0})}}{1!}(u - {u_0}) + \frac{{f''({u_0})}}{2!}{(u - {u_0})^2}{\rm{ + }} \ldots $$
+由此可推导出非线性右端项~$f(u)$ 的具有~Taylor 形式的离散格式
+\begin{equation}\label{eq4.20}
+f(u({x_i},{t^{n + 1}})) = f(u({x_i},{t^n})) + f'(u({x_i},{t^n}))(u({x_i},{t^{n + 1}}) - u({x_i},{t^n})) + O(\Delta {t^2}).
+\end{equation}
+显然，Taylor 形式的离散格式满足~Mickens 准则~(3)，并且对于构造复杂的非线性项的离散格式更方便。
+\subsection{离散格式的建立}
+与\;\ref{FDM} 节中介绍的分数阶~FHN 模型的标准有限差分法类似。首先采用文献\cite{Liu2012} 中解耦的数值技巧对~Riesz 空间分数阶~FHN 模型进行解耦。假设~$\alpha_1 =\alpha_2=\alpha$ (当~$\alpha_1 \neq \alpha_2$ 时, 该方法仍然适用)，记时间层~$t=t_n$ 上的值为~$u_n, v_n$，通过两步分别计算出时间层~$t=t_{n+1}$ 上的值~$u_{n+1}, v_{n+1}$。本节主要介绍分数阶偏微分方程的数值方法，即解耦之后的二维~Riesz 空间分数阶~FHN 非标准有限差分法。
+
+考虑~$[a,b]\times[c,d]$ 上的~Riesz 空间分数阶~Nagumo 反应-扩散模型\ucite{Nagumo1962,Chen2015}:
+\begin{equation}\label{eq4.21}
+\frac{{\partial {{u}}}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + u(1-u)(u-\alpha),
+\end{equation}
+具有初始条件:
+\begin{equation}\label{eq4.22}
+ u(x,y,0) = \phi (x,y) \hspace{0.5cm} a\leq x\leq b, c\leq y\leq d,
+\end{equation}
+齐次~Dirichlet 边界条件:
+\begin{equation}\label{eq4.23}
+\begin{split}
+  u(a,y,t) = 0,\;u(b,y,t) =0;\\
+  u(x,c,t) = 0,\;u(0,d,t) = 0.
+\end{split}
+\end{equation}
+其中参数~$\alpha>0$ (本节取~$\alpha=0$)。类似与标准有限差分法求解微分方程的基本思路，采用非标准有限差分方法来求解微分方程可分为如下几步：
+
+Step 1. 区域剖分：将定解区域~$\Omega$ 离散化为网格离散节点的集合；
+
+Step 2. 微分方程的离散：将求解的偏微分方程中的时间导数项用离散格式\;(\ref{eq4.16}) 代替，计算分母函数~$\varphi$；空间导数项用移位的~G-L 分数阶离散格式\;(\ref{eq2.15}) 代替、非线性右端项用离散格式\;(\ref{eq4.20}) 代替得到非标准差分格式；
+
+Step 3. 求解差分格式：计算差分离散格式得到待求解变量在各离散点处离散值，(隐格式为求解线性代数方程组)；
+
+Step 4. 离散系统的性态分析：分析讨论所得非标准有限差分格式的稳定性及其数值近似解对于原微分方程解的收敛性。
+
+首先对式\;(\ref{eq4.21}) 的求解区域进行网格剖分。令~$h_x=(b-a)/m_1,~h_y=(d-c)/m_2$ 和~$\tau=T/N$ 分别为空间和时间网格步长，则有~$x_i=ih_x$\;$(i=0,1,...,m_1)$，$y_j=jh_y$\;$(j=0,1,...,m_2)$ 和~$t_k=k\tau$\;$(k=0,1,...,n)$。 定义~$u_{i,j}^k$ 为~$u(x,y,t)$ 在 $x=x_i,y=y_j,t=t_n$ 处的数值解。初始条件为~$u_{i,j}^0 = \phi ({x_i},{y_j})$。
+
+对于时间导数项的离散，用向后~Euler 非标准差分格式\;(\ref{eq4.16}) 离散时间导数
+\begin{equation}\label{eq4.24}
+\frac{{du(t)}}{{dt}}\left| {_{({x_i},{y_j},{t_n})}} \right. = \frac{{u({x_i},{y_j},{t_{n + 1}}) - u({x_i},{y_j},{t_n})}}{{\varphi (\tau )}} + O(\tau ).
+\end{equation}
+下面求解式\;(\ref{eq4.24}) 的分母函数~$\varphi(\tau)$。令式\;(\ref{eq4.21}) 的非线性右端项满足~$f(u)=u^2(1-u)=0$ ，则存在三个实数解~$\bar{u}^{(1)}=\bar{u}^{(2)}=0,\bar{u}^{(3)}=1$。由式\;(\ref{eq4.17})-(\ref{eq4.18}) 可得
+$$R_1=R_2=0,\;R_3=-1；\;R^*=1.$$
+由式\;(\ref{eq4.18}) 可知，分母函数~$\varphi(\tau)$ 为
+\begin{equation}\label{eq4.25}
+\varphi(\Delta t)=1-e^{-\Delta t}.
+\end{equation}
+
+对于空间导数项的离散，采用移位的~G-L分数阶离散格式\;(\ref{eq2.15}) 离散$x$ 方向的~Riesz 分数阶导数：
+\begin{equation}\label{eq4.26}
+\begin{split}
+{_a^GD_x^\alpha u{|_{({x_i},{y_j},{t_{n+1}})}}} = \frac{1}{{{{({h_x})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i - l + 1,}}{y_j},{t_{n+1}})}  + O({h_x}), \\
+{_x^GD_b^\alpha u{|_{({x_i},{y_j},{t_{n+1}})}}} = \frac{1}{{{{({h_x})}^{{\alpha _1}}}}}\sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i + l - 1,}}{y_j},{t_{n+1}})}  + O({h_x}).
+\end{split}
+\end{equation}
+同样地，在~$y$ 方向上的~Riesz 空间分数阶导数也有类似的离散格式。
+
+对于非线性右端项的离散，首先假设~$ f ( u ) \in C^1(D) $ ($D$ 是有限区域)，然后利用~Taylor 形式的离散格式\;(\ref{eq4.20}) 逼近非线性项有：
+\begin{equation}\label{eq4.27}
+\begin{split}
+f(u({x_i},{y_j},{t_{n + 1}})) &= f(u({x_i},{y_j},{t_n})) \\
+&+ f'(u({x_i},{y_j},{t_n}))(u({x_i},{y_j},{t_{n + 1}}) - u({x_i},{y_j},{t_n})) + O({\tau ^2}).
+\end{split}
+\end{equation}
+把式\;(\ref{eq4.25})-(\ref{eq4.27}) 带进微分方程\;(\ref{eq4.21})，可得离散格式：
+\begin{equation} \label{eq4.28}
+\begin{split}
+&\frac{{u({x_i},{y_j},{t_{n + 1}}) - u({x_i},{y_j},{t_n})}}{{\varphi (\tau )}}\\
+&=  - {r_1}\left[ {\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i - l + 1}},{y_j},{t_{n + 1}}) + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u({x_{i + l - 1}},{y_j},{t_{n + 1}})} } } \right]\\
+&  - {r_2}\left[ {\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)}u({x_i},{y_{j - l + 1}},{t_{n + 1}}) + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}u({x_i},{y_{j + l - 1}},{t_{n + 1}})} } } \right]\\
+&  + f'(u({x_i},{y_j},{t_n}),{x_i},{y_j},{t_n})\left[u({x_i},{y_j},{t_{n + 1}}) - u({x_i},{y_j},{t_n})\right]\\
+& + f(u({x_i},{y_j},{t_n}),{x_i},{y_j},{t_n}) + {R_{i,j,n + 1}},\\
+\end{split}
+\end{equation}
+其中\\
+$c_{\alpha}=1/[2cos(\pi\alpha/2)]<0 $，$r_1 = {k_x}{c_{{\alpha _1}}}{({h_x})^{{-\alpha _1}}}$，$r_2 = {k_y}{c_{{\alpha _2}}}{({h_y})^{{-\alpha _2}}}$，$1 < {\alpha _1},{\alpha _2} \le 2$，扩散系数~$k_x,k_y>0$。分母函数~$\varphi(\tau)=1-e^{-\tau}$ ，系数$~ {g_\alpha ^{(l)}} $ 为标准的~Gr\"{u}nwald 权重且满足式\;(\ref{eq2.13})。存在正常数~$c^*$，使得局部截断误差~${{R_{i,j,n + 1}}}$ 满足：
+$$\left| {{R_{i,j,n + 1}}} \right| \le c^*({h_x} + {h_y} + \tau ).$$
+在方程\;(\ref{eq4.28}) 中略去小量项~${R_{i,j,n + 1}}$，并用数值解~$u_{i,j}^n$ 替代精确解~$u({x_i},{y_j},{t_n})$，令~$f(u({x_i},{y_j},{t_n}),{x_i},{y_j},{t_n}) \equiv f_{i,j}^n$。可得二维~Riesz 空间分数阶~Nagumo 反应-扩散模型\;(\ref{eq4.21})-(\ref{eq4.23}) 的非标准隐式差分格式：
+\begin{equation}\label{eq4.29}
+\begin{split}
+u_{i,j}^{n + 1}-\varphi (\tau )f'(u_{i,j}^n)u_{i,j}^{n + 1}
+&+\varphi (\tau ) r_1\left[\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u_{i - l + 1,j}^{n + 1} + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u_{i + l - 1,j}^{n + 1}} } \right]\\
+&+\varphi (\tau ) r_2\left[\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j - l + 1}^{n + 1} + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j + l - 1}^{n + 1}} } \right]\\
+&= u_{i,j}^n - \varphi (\tau )f'(u_{i,j}^n)u_{i,j}^n+ \varphi (\tau )f_{i,j}^n,
+\end{split}
+\end{equation}
+相应的初边值条件离散格式为：
+\begin{equation}\label{eq4.30}
+\begin{split}
+   &u_{i,j}^0 = {\phi _{i,j}} = \phi ({x_i},{y_j}), \\
+   u_{0,j}^n &= u_{{m_1},j}^n = u_{i,0}^n = u_{i,{m_2}}^n = 0.
+\end{split}
+\end{equation}
+整理方程组\;(\ref{eq4.29})-(\ref{eq4.30}) 可得如下矩阵-向量形式
+\begin{equation}\label{eq4.31}
+{\tilde{A}}{{\bf{u}}^{n}} = {{\bf{\tilde{b}}}^{n}},
+\end{equation}
+其中~${\bf{u}}^{n} = (u_{1,1}^n,u_{1,2}^n,...,u_{1,{m_2} - 1}^n,u_{2,1}^n,...,u_{{m_1} - 1,{m_2} - 1}^n)^T$，${{\bf{\tilde{b}}}^{n}}$ 是~$(m_1-1)(m_2-1)$ 维的列向量。系数矩阵~$\tilde{A}$ 为~$(m_1-1)(m_2-1)\times (m_1-1)(m_2-1)$ 维的稠密矩阵。类似标准有限差分隐格式中代数方程组的求解算法，本节仍然采用具有高计算效率的多重网格算法\ucite{Briggs2011A}。
+\subsection{稳定性分析}
+接下来主要对非标准隐式差分格式\;(\ref{eq4.29})-(\ref{eq4.30}) 的稳定性和解的收敛性进行严格的理论分析。
+
+首先分析稳定性并给出严格的证明过程。为了书写过程简便，定义~$L_1$ 算子为
+\begin{equation*}
+\begin{split}
+ L_1u_{i,j}^{n+1}=u_{i,j}^{n + 1}
+&+\varphi (\tau )r_1\left[\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)}u_{i - l + 1,j}^{n + 1} + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}u_{i + l - 1,j}^{n + 1}} } \right]\\
+&+ \varphi (\tau )r_2\left[\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j - l + 1}^{n + 1} + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}u_{i,j + l - 1}^{n + 1}} } \right].
+\end{split}
+\end{equation*}
+则非标准隐式差分格式\;(\ref{eq4.29}) 可被简写为
+\begin{equation}\label{eq4.32}
+\begin{split}
+  L_1u_{i,j}^{n+1}-\varphi (\tau )f'(u_{i,j}^n)u_{i,j}^{n + 1}&= u_{i,j}^n- \varphi (\tau )f'(u_{i,j}^n)u_{i,j}^n\\
+  &+\varphi (\tau)f(u_{i,j}^n),\hspace{0.5cm} n=0,1,2,...,N.
+\end{split}
+\end{equation}
+由~${{\bf{u}}^n} = {[u _{1,1}^n,u _{2,1}^n,...,u _{{m_1} - 1,{m_2} - 1}^n]^T}$，则~${\left\| {{{\bf{u}}^n}} \right\|_\infty } = \left| {u _{{i_0},{j_0}}^n} \right|= \mathop {max}\limits_{1 \le i \le {m_1} - 1,1 \le j \le {m_2} - 1} \left| {u _{i,j}^n} \right| $，于是可得如下稳定性定理。
+\theorebox{(稳定性)}{
+若~$u_{i,j}^n$ 是非标准隐式差分格式\;(\ref{eq4.29})-(\ref{eq4.31}) 的数值解，非线性右端项满足~$f(u) \in {C^1}(D)$ 且~${H_1} = \mathop {\max }\limits_{u \in \Omega } \left| {f(u)} \right|$，${H_2} = \mathop {\max }\limits_{u \in \Omega } \left| {f'(u)} \right|$。取~$r\beta= min \{r_1{\beta _x}, r_2{\beta _y}\}$，如果在~$2r\beta < {H_2}$ 时有~ $\tau  < 1/2({H_2} - 2r\beta )$ 成立，则非标准隐式差分格式 (\ref{eq4.29})-(\ref{eq4.31}) 是稳定的，并且有
+$${\left\| {{{\bf{u}}^n}} \right\|_\infty } \le C_1^*\left( {{{\left\| {{{\bf{u}}^0}} \right\|}_\infty } + T{H_1}} \right) \hspace{0.5cm} (n=0,1,2,...,N),$$}\label{stability}
+其中~$C_1^*$ 是与~$h_x$，$h_y$ 和~$\tau$ 无关的常数。
+
+{\hei 证明：}由引理\;\ref{GLW} 可知，${\sum\limits_{l = 0}^n {g_{{\alpha}}^{(l)}} }<0$， ${\sum\limits_{l = 0}^n {g_{{\alpha}}^{(l)}} }\leq  {\sum\limits_{l = 0}^m {g_{{\alpha}}^{(l)}} }\;(n\leq m)$。 又~$r_1,r_2< 0$，因此有
+\begin{equation*}
+  \begin{split}
+  {r_1}\left( {\sum\limits_{l = 0}^{i + 1} {g_{{\alpha _1}}^{(l)} + \sum\limits_{l = 0}^{{m_1} - i + 1} {g_{{\alpha _1}}^{(l)}} } } \right) \ge 2{r_1}\sum\limits_{l = 0}^{{m_1}} {g_{{\alpha _1}}^{(l)}}  = {r_1}{\beta _x},\\
+   r_2\left( {\sum\limits_{l = 0}^{j + 1} {g_{{\alpha _2}}^{(l)} + \sum\limits_{l = 0}^{{m_2} - j + 1} {g_{{\alpha _2}}^{(l)}} } } \right)\geq 2r_2\sum\limits_{l = 0}^{{m_2}} {g_{{\alpha _2}}^{(l)}} = r_2{\beta _y}.
+  \end{split}
+\end{equation*}
+非线性右端项满足~$f(u) \in {C^1}(D)$，故~$f(u)$ 与~$f'(u)$ 均可取得最大值，即有~$\left| {f(u)} \right| \le {\rm{ }}{H_1}$, $\left| {f'(u)} \right| \le {\rm{ }}{H_2}$。 又取~$r\beta= min \{r_1{\beta _x},r_2{\beta _y}\}$， 于是可推导出
+\begin{equation*}
+  \begin{split}
+\left| {u_{{i_0},{j_0}}^n} \right| &+ \varphi (\tau )\left( {2r\beta  - {H_2}} \right)\left| {u_{{i_0},{j_0}}^n} \right|  = \left| {\left[1 + \varphi (\tau )2r\beta \right]u_{{i_0},{j_0}}^n} \right| - \varphi (\tau ){H_2}\left| {u_{{i_0},{j_0}}^n} \right|\\
+&\leq \left| {u_{{i_0},{j_0}}^n + \varphi (\tau )\left[ {2r\beta  - {H_2}} \right]u_{{i_0},{j_0}}^n} \right|\\
+& \le \left| {u_{{i_0},{j_0}}^n + \varphi (\tau )({r_1}{\beta _x} + {r_2}{\beta _y})u_{{i_0},{j_0}}^n - \varphi (\tau ){H_2}u_{{i_0},{j_0}}^n} \right|\\
+    &  \le \left| {{L_1}u_{{i_0},{j_0}}^n - \varphi (\tau )f'(u_{{i_0},{j_0}}^{n - 1})u_{{i_0},{j_0}}^n} \right|\\
+     &= \left| {u_{{i_0},{j_0}}^{n - 1} - \varphi (\tau )f'(u_{{i_0},{j_0}}^{n - 1})u_{{i_0},{j_0}}^{n - 1} + \varphi (\tau )f(u_{{i_0},{j_0}}^{n - 1})} \right|.
+  \end{split}
+\end{equation*}
+当~$2r\beta \geq {H_2}$ 时，易得
+\begin{equation}\label{eq4.33}
+\left| {u_{{i_0},{j_0}}^n} \right| \le C\left( {\left| {u_{{i_0},{j_0}}^{n - 1}} \right| + \varphi (\tau )\left| {f'(u_{{i_0},{j_0}}^{n-1})u_{{i_0},{j_0}}^{n - 1}} \right| + \varphi (\tau )\left| {f(u_{{i_0},{j_0}}^{n - 1})} \right|} \right).
+\end{equation}
+当~$2r\beta < {H_2}$ 时，为了能够使得式\;(\ref{eq4.33}) 仍然成立，注意有~$\varphi (\tau )<\tau $，因此只需要假设~$\tau < 1/2({H_2}-2r\beta)$。
+
+将~${\left\| {{{\bf{u}}^n}} \right\|_\infty } = \left| {u _{{i_0},{j_0}}^n} \right|$ 带入式\;(\ref{eq4.33}) 可得
+\begin{equation*}
+  \begin{split}
+ {\left\| {{{\bf{u}}^n}} \right\|_\infty } &\leq  C\left( {\left| {u_{{i_0},{j_0}}^{n - 1}} \right| + \varphi (\tau )\left| {f'(u_{{i_0},{j_0}}^{n-1})u_{{i_0},{j_0}}^{n - 1}} \right| + \varphi (\tau )\left| {f(u_{{i_0},{j_0}}^{n - 1})} \right|} \right)\\
+ & \le C[1 + \varphi (\tau ){H_2}]{\left\| {{{\bf{u}}^{n - 1}}} \right\|_\infty }+  \varphi (\tau )H_1 \\
+ &\le C{[1 + \varphi (\tau ){H_2}]^n}{\left\| {{{\bf{u}}^0}} \right\|_\infty } + C\sum\limits_{k = 0}^{n - 1} {{{\left[ {1 + \varphi (\tau ){H_2}} \right]}^k}} \varphi (\tau ){H_1}\\
+ & \le C{e^{n\varphi (\tau ){H_2}}}{\left\| {{{\bf{u}}^0}} \right\|_\infty } + Cn\varphi (\tau ){H_1}{\left[ {1 + \varphi (\tau ){H_2}} \right]^n} \\
+ & \le C{e^{T{H_2}}}\left( {{{\left\| {{{\bf{u}}^0}} \right\|}_\infty } + T{H_1}} \right)\\
+ &\le C\left( {{{\left\| {{{\bf{u}}^0}} \right\|}_\infty } + T{H_1}} \right).\\
+  \end{split}
+\end{equation*}
+\subsection{收敛性分析}
+假定连续问题\;(\ref{eq4.21})-(\ref{eq4.23}) 有一个光滑解~$\tilde u_{i,j}^n$，$u_{i,j}^n$ 是非标准差分格式\;(\ref{eq4.29})-(\ref{eq4.30}) 的数值解。定义误差为~$\eta _{i,j}^n = u({x_i},{y_j},{t_n}) - u_{i,j}^n$，${{\bf{y}}^n} = {[\eta _{1,1}^n,\eta _{2,1}^n,...,\eta _{{m_1} - 1,{m_2} - 1}^n]^T}$，则~${\left\| {{\bf{y}}^n} \right\|_\infty }  = \left| {\eta _{{i_0},{j_0}}^n} \right|= \mathop {max}\limits_{1 \le i \le {m_1} - 1,1 \le j \le {m_2} - 1} \left| {\eta _{i,j}^n} \right|$，于是有下列收敛性定理。
+
+\theorebox{(收敛性)}{假设~$f(u) \in {C^1}(D)$ 并且有~${H_1} = \mathop {\max }\limits_{u \in \Omega } \left| {f(u)} \right|$，${H_2} = \mathop {\max }\limits_{u \in \Omega } \left| {f'(u)} \right|$，取~$r\beta= min \{r_1{\beta _x},r_2{\beta _y}\}$。如果假定在~$2r\beta < {H_2}$ 时有~$\tau  < 1/2({H_2} - 2r\beta )$，则存在与~$h_x$，$h_y$ 和~$\tau $ 无关的正常数~$C_1$ 和~$C_2$，使得}\label{convergence2}
+$$\left| {u({x_i},{y_j},{t_n}) - u_{i,j}^n} \right| \le C_1\tau{e^{( {1 +2\tau{H_2}} )}}+{C_2}(\tau  + {h_x} + {h_y})$$
+对任意的~$i,j,n$ 都成立。
+
+{\hei 证明：}因为~$\tilde u_{i,j}^n$ 满足式\;(\ref{eq4.32})，则有
+\begin{equation*}
+\begin{split}
+{L_1}\tilde u_{i,j}^n - \varphi (\tau )f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^n& = \tilde u_{i,j}^{n - 1}- \varphi (\tau )f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^{n - 1} \\
+  & + \varphi (\tau )f(\tilde u_{i,j}^{n - 1}) + \varphi (\tau )R_{i,j}^n, \hspace{0.5cm} n=0,1,2,...,N.
+\end{split}
+\end{equation*}
+又因为~$u_{i,j}^n$ 是非标准隐式差分格式\;(\ref{eq4.29})-(\ref{eq4.30}) 的数值解，由此可知误差~$\eta _{i,j}^n$ 满足下列等式
+\begin{equation}\label{eq4.34}
+\begin{split}
+&{L_1}\eta _{i,j}^n{\rm{ }} - \varphi (\tau )\left[ {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^n - f'(u_{i,j}^{n - 1})u_{i,j}^n} \right] \\
+&= \eta _{i,j}^{n - 1}
+- \varphi (\tau )\left[ {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^{n - 1} - f'(u_{i,j}^{n - 1})u_{i,j}^{n - 1}} \right]\\
+ &\hspace{1.3cm}+ \varphi (\tau )\left[ {f(\tilde u_{i,j}^{n-1}) - f(u_{i,j}^{n - 1})} \right] + \varphi (\tau )R_{i,j}^n.
+\end{split}
+\end{equation}
+由三角不等式知
+\begin{equation*}
+ \left| {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^n - f'(u_{i,j}^{n - 1})u_{i,j}^n} \right| \le {H_2}\left| \eta _{i,j}^n\right| + 2{H_2}\left| {u_{i,j}^n} \right|,
+\end{equation*}
+\begin{equation*}
+ \left| {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^{n - 1} - f'(u_{i,j}^{n - 1})u_{i,j}^{n - 1}} \right| \leq 2{H_2}\left| {u_{i,j}^{n - 1}} \right| +{H_2}\left| {\eta _{i,j}^{n - 1}} \right|.
+\end{equation*}
+因此等式\;(\ref{eq4.34}) 的左端项可写为
+\begin{equation*}
+  \begin{split}
+    &\left| {{L_1}\eta _{i,j}^n - \varphi (\tau )\left[ {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^n - f'(u_{i,j}^{n - 1})u_{i,j}^n} \right]} \right| \\
+    &\ge \left| {{L_1}\eta _{i,j}^n} \right| - \varphi (\tau )\left| {\left[ {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^n - f'(u_{i,j}^{n - 1})u_{i,j}^n} \right]} \right|\\
+    &\ge \left| {\eta _{i,j}^n + \varphi (\tau )({r_1}{\beta _x} + {r_2}{\beta _y})\eta _{i,j}^n} \right| - \varphi (\tau )\left[ {{H_2}\left| {\eta _{i,j}^n} \right| + 2{H_2}\left| {u_{i,j}^n} \right|} \right]\\
+    &\ge \left| {\eta _{i,j}^n + 2\varphi (\tau )r\beta \eta _{i,j}^n} \right| - \varphi (\tau ){H_2}\left| {\eta _{i,j}^n} \right| - 2\varphi (\tau ){H_2}\left| {u_{i,j}^n} \right|\\
+     &= \left| {\eta _{i,j}^n} \right| + \varphi (\tau )\left[ {2r\beta  - {H_2}} \right]\left| {\eta _{i,j}^n} \right| - 2\varphi (\tau ){H_2}\left| {u_{i,j}^n} \right|.
+   \end{split}
+\end{equation*}
+通过定理\;\ref{Lag}可知，存在一个~$\lambda \in D$，使得等式\;(\ref{eq4.34}) 的右端项满足
+\begin{equation*}
+  \begin{split}
+   &\left| {\eta _{i,j}^{n - 1} - \varphi (\tau )\left[ {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^{n - 1} - f'(u_{i,j}^{n - 1})u_{i,j}^{n - 1}} \right]} \right.\\
+   &\left. { + \varphi (\tau )\left[ {f(\tilde u_{i,j}^{n - 1}) - f(u_{i,j}^{n - 1})} \right] + \varphi (\tau )R_{i,j}^n} \right|\\
+   & \le \left| {\eta _{i,j}^{n - 1}} \right| + \varphi (\tau )\left| {f'(\tilde u_{i,j}^{n - 1})\tilde u_{i,j}^{n - 1} - f'(u_{i,j}^{n - 1})u_{i,j}^{n - 1}} \right|\\
+   &+ \varphi (\tau )\left| {f'(\lambda)}{\eta _{i,j}^{n - 1}} \right| + \varphi (\tau ){C^*}({h_x} + {h_y} + \tau )\\
+   &\le \left[ {1 + 2\varphi (\tau ){H_2}} \right]\left| {\eta _{i,j}^{n - 1}} \right| + 2\varphi (\tau ){H_2}\left| {u_{i,j}^{n - 1}} \right| + \varphi (\tau ){C^*}({h_x} + {h_y} + \tau ).
+  \end{split}
+\end{equation*}
+通过推导可得
+\begin{equation*}
+  \begin{split}
+ \left| {\eta _{i,j}^n} \right|& + \varphi (\tau )\left[ {2r\beta  - {H_2}} \right]\left| {\eta _{i,j}^n} \right| - 2\varphi (\tau ){H_2}\left| {u_{i,j}^n} \right|\\
+ \le &\left[ {1 + 2\varphi (\tau ){H_2} } \right]\left| {\eta _{i,j}^{n - 1}} \right|+ 2\varphi (\tau ){H_2}\left| {u_{i,j}^{n - 1}} \right| \\
+ &+ \varphi (\tau ){C^*}({h_x} + {h_y} + \tau ).\\
+   \end{split}
+\end{equation*}
+当~$2r\beta \geq {H_2}$ 时，有
+\begin{equation*}
+\begin{split}
+\left| {\eta _{{i_0},{j_0}}^n} \right|{\rm{ }}  \le& C\left[ {1 + 2\varphi (\tau ){H_2}} \right]\left| {\eta _{{i_0},{j_0}}^{n - 1}} \right|{\rm{ + }}2C\varphi (\tau ){H_2}\left( {{{\left\| {{{\bf{u}}^n}} \right\|}_\infty } - {{\left\| {{{\bf{u}}^{n - 1}}} \right\|}_\infty }} \right)\\
+& + \varphi (\tau ){C^{\rm{*}}}({h_x} + {h_y} + \tau ).
+\end{split}
+\end{equation*}
+当~$2r\beta < {H_2}$ 时，选取~$\tau  < 1/2({H_2} - 2r\beta )$。通过定理\;\ref{stability}，可知
+\begin{equation*}
+  \begin{split}
+ {\left\| {{{\bf{y}}^n}} \right\|_\infty } &\le C\left[ {1 + 2\varphi (\tau ){H_2}} \right]{\left\| {{{\bf{y}}^{n - 1}}} \right\|_\infty }+\varphi (\tau )H_0+ \varphi (\tau ){C^{\rm{*}}}({h_x} + {h_y} + \tau )\\
+   &\le C{[1 + 2\varphi (\tau ){H_2}]^n}{\left\| {{{\bf{y}}^0}} \right\|_\infty } +C \varphi (\tau ){H_0}\sum\limits_{k = 0}^{n - 1} {{{[1 + \varphi (\tau )({H_2}{\rm{ + }}{L_{\max }})]}^k}}\\
+    &+ \sum\limits_{k = 0}^{n - 1} {{{[1 + 2\varphi (\tau ){H_2}]}^k}} {C^*}\varphi (\tau )(\tau  + {h_x} + {h_y}).
+   \end{split}
+ \end{equation*}
+其中~$H_0=4C^2H_2\left( {{{\left\| {{{\bf{u}}^0}} \right\|}_\infty } + T{H_1}} \right)$。又因为~${{{\bf{y}}^0}}=\bf{0}$ ( 初始时刻，连续方程与离散方程在网格节点上的值相等 )，于是有
+ \begin{equation*}
+   \begin{split}
+   {\left\| {{{\bf{y}}^n}} \right\|_\infty } &\le C\varphi (\tau ){H_0}{e^{\left[ {1 + 2\varphi (\tau ){H_2}} \right]}}+ {[1 + 2\varphi (\tau ){H_2}]^n}n\tau{C^*}(\tau  + {h_x} + {h_y})\\
+    &\le C {H_0}\tau{e^{\left[ {1 +2\varphi (\tau ){H_2}} \right]}}+{e^{2n\tau {H_2}}}n\tau {C^*}(\tau  + {h_x} + {h_y})\\
+    &\le C_1\tau{e^{\left[ {1 +2\tau{H_2}} \right]}}+{e^{2T{H_2}}}T{C^*}(\tau  + {h_x} + {h_y})\\
+    &=  C_1\tau{e^{\left[ {1 +2\tau{H_2}} \right]}}+{C_2}(\tau  + {h_x} + {h_y}).
+    \end{split}
+ \end{equation*}
+
+我们注意到~$\mathop {\lim }\limits_{\tau  \to 0} \tau {e^{\left[ {1 + 2\tau {H_2}} \right]}} = 0$。 因此当~$h_x$，$h_y$ 和~$\tau $ 趋于零时，$u_{i,j}^n$ $\rightarrow$ $u(x,y,t)$。由此可知非标准隐式差分格式\; (\ref{eq4.29})-(\ref{eq4.31}) 在一定条件下是收敛的。
+\section{本章小结}
+分数阶~FHN 模型由一个分数阶反应-扩散方程和一系列的常微分方程耦合而成，在数学上表现为~Riesz 分数阶导数代替原~FHN 模型中的空间整数阶导数。本章主要介绍了~Riesz 分数阶~FHN 模型的标准有限差分法和非标准有限差分法。首先构造标准有限差分格式，直接使用标准的~G-L 公式离散~Riesz 分数阶导数具有一阶精确度，但是由此导出的差分格式存在不稳定性问题，所以本章选择利用移位的~G-L 公式用于空间分数阶微分方程的数值离散过程，得到了无条件稳定且收敛的标准差分格式。然后利用改进的非标准有限差分法，构造了~Riesz 分数阶~FHN 模型的非标准有限差分格式。最后严格的证明了在~$2r\beta < {H_2}$ 时取~$\tau  < 1/2({H_2} - 2r\beta )$，该非标准有限差分格式稳定且收敛。

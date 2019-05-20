@@ -1,0 +1,83 @@
+%==============第三章节内容==================
+\chapter{分数阶~FitzHugh-Nagumo 单域模型}
+在计算心脏学中，反映扩散模型又称激励传播动力学模型，它由一系列的非线性微分方程耦合而成，能够有效反映受刺激的介质中电兴奋的传播过程\ucite{Sachse2004}。本章主要介绍我们在研究心脏科学的反常扩散模拟中遇到的分数阶模型——分数阶~FitzHugh-Nagumo 单域模型，这里仅讨论二维的分数阶~FitzHugh-Nagumo 单域模型。本章主要由两部分构成，第一部分通过非均匀心脏组织内的扩散模型引进二维~FitzHugh-Nagumo 单域模型。第二部分主要介绍利用~Riesz 分数阶导数代替原~FitzHugh-Nagumo 单域模型中的空间整数阶导数，推导出二维~Riesz 分数阶~FitzHugh-Nagumo 单域模型，并列出了边界条件及相应的生理学意义。
+\section{非均匀心脏组织内的扩散模型}
+生物学中，把对外界刺激能发生明显反应的细胞称为可兴奋细胞，如大脑皮层或者心脏细胞，这类细胞组织具有定时的生成和传播电脉冲，调节其诸如视觉或收缩等功能。当细胞受到外来刺激达到阈值后就开始兴奋，表现为动作电位（AP）的产生。AP 代表电势随着时间的推移产生的变化，这些变化是离子运动跨膜电流流动的结果。生物学中，把这一变化过程通过反映扩散模型来描述。
+
+反映扩散模型的一般形式为：
+$$\frac{{\partial {u_i}}}{{\partial t}} = \nabla  \cdot ({{\bf{D}}_{\bf{i}}}\nabla {u_i}) + {f_i}({u_1}, \cdots ,{u_n})\quad i = 1,2, \cdots ,n.$$
+其中$~u_i$ 为状态变量，$~f_i$ 和$~{{\bf{D}}_{\bf{i}}}$ 分别为激励源项和扩散张量。在心脏电激传播模型中，状态变量$~u_i$ 对应相应的细胞状态，例如跨膜电势、离子浓度或离子通道电导率。在电兴奋传播模拟过程中，细胞状态变化由激励源项$~f_i$ 和扩散项$~\nabla  \cdot ({{\bf{D}}_{\bf{i}}}\nabla {u_i})$ 同时决定。
+
+细胞内部空间（intracellular space）与细胞间隙连接（gap junction）之间的关系通过电导率张量联系起来，因此可以把心脏组织细胞的内外域看作质地相同且均匀的区域。心脏电势传播模拟可分为以下两个过程：
+\begin{itemize}
+  \item 在细胞内部，通过电流传播模型计算出细胞内部电流源密度$~f_i$
+  \item 通过电流源密度$~f_{si}$获得并更新细胞的电生理学状态
+\end{itemize}
+
+细胞内部电流源密度$~f_i$ 可由下列$~Possion$ 方程计算而得
+\begin{equation}\label{eq3.1}
+    \nabla  \cdot ({\sigma _i}\nabla {V_m}) = {f_i},
+  \end{equation}
+  其中$~V_m$ 为跨膜电势，$~\sigma_i$ 为细胞内部导电率张量，描述了细胞内部空间与细胞间隙连接的导电率。细胞内部电流源密度$~f_i$ 包含两部分$~f_i=\beta I_{tm}-f_{si}$，代入式\;(\ref{eq3.1}) 可得
+  \begin{equation}\label{eq3.2}
+  \nabla  \cdot ({\sigma _i}\nabla {V_m}) = \beta {I_{tm}} - {f_{si}},
+  \end{equation}
+  其中比例系数$~\beta$ 反映了电流与电流源密度之间的转化率，跨膜电流$~I_{tm}$ 描述了流经细胞膜的总电流，并满足下列电生理学模型（忽略外加激励电流）
+  \begin{equation}\label{eq3.3}
+    {I_{tm}} = {C_m}\frac{{\partial {V_m}}}{{\partial t}} + {I_m},
+  \end{equation}
+  其中$~C_m$ 为膜电容，$I_m$ 为离子电流。将式\; (\ref{eq3.2}) 代入式\; (\ref{eq3.3}) 可得心脏电势传播模拟单域模型
+  \begin{equation}\label{eq3.4}
+    \frac{{\partial {V_m}}}{{\partial t}} = \frac{1}{{{C_m}}}\left[ {\frac{1}{\beta }\left( {\nabla  \cdot ({\sigma _i}\nabla {V_m}) + {f_{si}}} \right) - {I_m}} \right].
+  \end{equation}
+由此可知电势传播模拟单域模型是一类反映扩散模型，能有效地模拟电势在心脏细胞中的传播过程。将式\; (\ref{eq3.4}) 中的源项取为特殊的函数，即可得到最简单的单细胞模型——~FHN 单域模型\ucite{FitzHugh1961,Nagumo1962}。
+
+FHN 单域模型是心脏细胞电激励传播的简化模型，本文主要研究有限区域$~\Omega=[a,b]\times[c,d]$上如下形式的二维无量纲~FHN 单域模型：
+\begin{equation}\label{eq3.5}
+ \frac{{\partial u}}{{\partial t}} = \nabla  \cdot ({\bf{K}}\nabla u) + {I_{ion}}(u,v),
+ \end{equation}
+ \begin{equation}\label{eq3.6}
+  \frac{{\partial v}}{{\partial t}} = au - bv + c,
+ \end{equation}
+ \begin{equation}\label{eq3.7}
+ {I_{ion}} = \frac{{{C_2}}}{{{u_{amp}}}}(u - {u_{rest}})v + \frac{{{C_1}}}{{u_{amp}^2}}(u - {u_{rest}})(u - {u_{th}})(u - {u_{peak}}),
+\end{equation}
+其中$~u$ 是标准化的跨膜电势，$w$ 是无量纲的与时间有关的恢复变量，非负参数$~a,b,c,C_1$ 和$~C_2$ 的标准化取值分别为~0.13，0.013， 1，0.26 和~0.1。使用经典的~FHN 单域模型对心脏肌细胞的研究已经取得了许多有效的研究成果。即便如此，其描述组织结构还是具有很大的局限性。因此，寻求新的模拟组织异质性对心脏电波传播影响的数学建模方法\ucite{Bueno2014Fractional,Bueno2014Fourier} 变得十分重要。
+\section{空间分数阶~FitzHugh-Nagumo (FFHN)单域模型}
+\subsection{控制方程}
+在广泛的空间尺度上，心脏组织是一个复杂的异质结构，电势传播过程中受到组织的高度复杂性和异质性影响的程度尚不清楚。组织的空间复杂性可以对传送过程长度尺度产生几何约束，可以从根本上改变标准扩散定律。然而，传统的建模方法只适用于空间平均的连续介质，并且忽略了组织对调试电传导的影响。研究结果表明，这些传统的方法在特定的条件下对心肌组织的模拟是有效的。但是心肌结构是不连续且异质的，描述电势在心脏组织中传播过程的无论是单域模型还是双域模型，其背后的推理条件都是心脏肌细胞形成的集合细纤维排列成片状结构。已有研究表明，片状肌细胞的砖墙结构对于相邻肌细胞之间电兴奋的传播、传导时滞有显著的影响。另外，即使假定缝隙连接细胞能够保持细胞质之间的连续性，即在大尺度上可以把片状结构看作是一个均匀的域，研究表明，细胞质在局部尺度上仍然是不连续传播的根源。因此，把细胞内区域看做均质是很有疑问的，并且细胞内单个粒子追踪实验也证实了这种不规则扩散。
+
+分数阶导数具有遗传性和记忆性特性，它能有效地捕捉到心肌细胞外域的非均匀性和连接性。基于这些特性，Liu 等人提出了用~Riesz 分数阶导数替代经典扩散方程\;(\ref{eq3.5}) 中的空间二阶导数
+\begin{equation}\label{eq3.8}
+\frac{{\partial u}}{{\partial t}} = {\bf{K}}{{\bf{R}}^\alpha }u + {I_{ion}}(u,v).
+\end{equation}
+其中$~{{\bf{R}}^\alpha } = (R_x^{\alpha} ,R_y^{\alpha} ) = ({{{\partial ^{\alpha} }} \mathord{\left/
+ {\vphantom {{{\partial ^{\alpha} }} {\partial {{\left| x \right|}^{\alpha} },}}} \right.
+ \kern-\nulldelimiterspace} {\partial {{\left| x \right|}^{\alpha} },}}{{{\partial ^{\alpha} }} \mathord{\left/
+ {\vphantom {{{\partial ^{\alpha} }} {\partial {{\left| y \right|}^{\alpha} }}}} \right.
+ \kern-\nulldelimiterspace} {\partial {{\left| y \right|}^{\alpha} }}})$ 为~Riesz 分数阶算子，$1 < \alpha \leq2$，$\frac{{{\partial ^\alpha }u}}{{\partial {{\left| x \right|}^\alpha }}}$ 的定义如式\;(\ref{eq2.14}) 所示。当$~x$ 方向与$~y$ 方向阶数不同时有
+ \begin{equation}\label{eq3.9}
+ \frac{{\partial u}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + {I_{ion}}(u,v)  \hspace{0.5cm} (x,y,t)\in\ \Omega\times(0,T),
+ \end{equation}
+与式\;(\ref{eq3.5})-(\ref{eq3.6}) 构成了有限区域$~~\Omega$ 上的二维无量纲空间~FFHN 单域模型\ucite{Liu2012}。
+
+与传统的~FHN 单域模型相比，空间~FFHN 单域模型捕捉到了更多的心肌细胞的材料特性。
+\subsection{初边值条件}
+本文选取的初值条件为
+\begin{equation}\label{eq3.10}
+u(x,y,0) = \phi (x,y) \hspace{0.5cm} (x,y)\in \Omega,
+\end{equation}
+
+若假设细胞膜与外界环境隔绝，并且细胞外域边界上的电势为零。则有~Dirichlet 边界条件
+\begin{equation}\label{eq3.11}
+\begin{array}{l}
+u(a,y,t) = 0,\hspace{0.5cm} u(b,y,t) = 0,\\
+u(x,c,t) = 0,\hspace{0.5cm} u(x,d,t) = 0.
+\end{array}
+\end{equation}
+
+若假设细胞膜与外界环境隔绝，并且细胞外域边界无通量，则有~Neumann 边界条件
+\begin{equation}\label{eq3.12}
+ \frac{{\partial u}}{{\partial {\bf{n}}}} = 0.
+\end{equation}
+\section{本章小结}

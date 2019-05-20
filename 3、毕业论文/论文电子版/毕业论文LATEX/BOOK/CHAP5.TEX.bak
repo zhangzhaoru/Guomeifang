@@ -1,0 +1,438 @@
+%==============第五章节内容==================
+\chapter{数值实验}
+对于~Riesz 空间分数阶反应-扩散模型，无论采用标准有限差分方法还是非标准有限差分方法建立隐式差分格式，问题最后成为线性代数方程组~${\bf{Ax}} = {\bf{b}}$ 的求解。由于实际问题的求解区域一般比较复杂并且分数阶导数具有非局部性，导致系数矩阵~$A$ 不但量级非常大，而且是稠密矩阵。传统的迭代方法如~Gauss-Seidel 迭代法计算量很昂贵，于是本文引进了具有较高计算效率的多重网格算法。本章主要由两部分组成，第一部分主要介绍了多重网格算法的基本理论及其主要的算法步骤。第二部分主要给出了一些二维区域的~Riesz 空间分数阶反应- 扩散模型及分数阶~FHN 单域模型算例及相应的计算结果。
+\section{多重网格算法}
+\subsection{多重网格的基本理论}
+多重网格算法主要从网格方程的迭代求解过程中进化而来。迭代误差具有~Fourier 分量，并且不同的分量有着不一样的衰减程度。而迭代计算中网格的步长对不同频率误差分量具有不同的衰减程度，由此出发可得到降低计算量和提高计算效率的基本思想。在迭代求解过程中，对于同样的网格步长，可把低频误差分量和高频误差分量看作具有长波长和短波长波形频率的分量。
+
+由于高频的误差分量与低频的误差分量衰减速度不同，前者远大于后者。初始迭代可选择传统的迭代方法（如雅克比迭代），高频震荡误差将被消除，使得迭代后误差趋于光滑，这种光滑效应也常采用松弛因子\ucite{Brandt2011} 来刻画。波形频率的高低往往相对于网格大小而言的，在细网格层上的误差分量频率不高，但是到了粗网格上又成为相对的高频的误差分量。多重网格算法的基本原理就是分步分层把细网格上低频分量的光滑误差部分变换到粗网格~$\Omega^{2h}$ 上，在粗网格层上进行迭代求解消除细网格上的低频误差（在粗网格上变成高频误差分量），由此提高误差的衰减速度，然后再把误差校正结果经过插值方法延拓至细网格层~$\Omega^h$ 上，与原来的近似解组合，这个过程叫做粗网格校正。类似地，在粗网格上也是有高频和低频误差的，其中的高频误差可通过局部松弛消除，再将余下的低频误差转移到更粗一层的网格上进行迭代求解，直到整个求解过程的最高层网格，该层网格具有少数的未知量个数，因此可直接精确求解。然后倒过来把高层网格上的解从高层到低层网格逐层返回迭代，在最细一层网格上形成原问题的近似解。
+
+综上所述，多重网格算法可归纳总结为：细网格光滑、误差逐层限制到粗网格、误差逐层插值到细网格、细网格解的校正。首先在细网格层采用传统迭代消除高频误差分量，达到误差光滑作用，通过限制算子逐层限制到粗网格消除低频误差分量，最后通过插值算子逐层返回细网格，这保证了算法的最终结果即为所求问题的数值近似解。由此可知，多重网格算法需要同一个问题能在不同规模的网格上求解。
+
+多重网格的经典算法具有三种不同的形式，分别是~$V$ 循环、$W$ 循环和~$F$ 循环。其中~$v$ 循环是最基础的，另外~$W$ 和~$F$ 两种循环都可以通过套迭代技术在~$V$ 循环的基础上实现。通常相比~$V$ 循环而言，~$W$ 循环具有更好的收敛效果。因此若误差未能通过粗网格上的迭代被有效地消除，可尝试采用~$W$ 循环来解决。先在粗网格上求解得到较好近似并作为初始值插值到细网格上进行迭代，这是~$F$ 循环独有特点，同时也是它与另外两种循环的区别之处。三种不同的循环形式如图\;\ref{fig:side:v}- 图\;\ref{fig:side:f} 所示。
+
+\begin{figure}
+ \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.6\textwidth,height=0.6\textwidth]{fig/v-circle}
+  \caption{多重网格~$V$ 循环}\label{fig:side:v}
+ \end{minipage}%
+ \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.8\textwidth,height=0.6\textwidth]{fig/w-circle}
+   \caption{多重网格~$W$ 循环}\label{fig:side:w}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[width=0.5\textwidth,height=0.32\textwidth]{fig/f-circle}
+  \caption{多重网格~$F$ 循环}\label{fig:side:f}
+\end{figure}
+
+数值高效性是多重网格算法的优势之一，还有一个优点是多重网格算法可以拆分为几个相互独立的模块，程序设计模块性好且结构清晰，可重用率高。
+
+第一层细网格~$\Omega^h$ 上的边值问题可以概括为：~${\bf{Au}}=\bf{f}$，假设~${\bf{v}}$ 是精确解~ ${\bf{u}}$ 的逼近解，则误差~${\bf{e}}={\bf{u}} - {\bf{v}}$ 满足误差方程：
+\begin{equation}\label{eq5.1}
+{\bf{Ae}} = {\bf{r}} = {\bf{f}} - {\bf{Av}}.
+\end{equation}
+
+接下来主要介绍代数方程组~${\bf{Au}}=\bf{f}$ 的多重网格算法及具体步骤。首先，对给定区域进行~$l>1$ 层网格剖分：$\Omega^h, \Omega^{2h},\ldots, \Omega^{Lh} $，空间网格步长为~$h,2h,4h,\ldots,Lh=2^{l-1}h$。定义从细网格层~$\Omega^{(L-1)h}$ 到粗网格~$\Omega^{Lh}$ 上的函数转移算子为限制算子，用符号~$I_{(L-1)h}^{Lh}$ 表示；从粗网格到细网格上的函数转移算子为插值算子，用符号~$I_{Lh}^{(L-1)h}$ 表示。则多重网格算法的~$V$ 循环格式为：
+\begin{itemize}
+  \item 用经典迭代法迭代~$\nu_1$ 次计算~${{\bf{A}}^h}{{\bf{u}}^h} = {{\bf{f}}^h}$，迭代初值为~${\bf{v}}^h$
+  \item 将残余量~${{\bf{r}}^h} = {{\bf{f}}^h} - {{\bf{A}}^h}{{\bf{v}}^h}$ 通过~${{\bf{r}}^{2h}} = I_h^{2h}{{\bf{r}}^h}$ 限制到粗网格~$\Omega^{2h}$ 上
+      \begin{itemize}
+        \item 用经典迭代法迭代~$\nu_1$ 次计算~${{\bf{A}}^{2h}}{{\bf{u}}^{2h}} = {{\bf{r}}^{2h}}$，迭代初值为~${\bf{v}}^{2h}=0$
+        \item 将残余量~${{\bf{r}}^{2h}} $ 通过~${{\bf{r}}^{4h}} = I_{2h}^{4h}{{\bf{r}}^{2h}}$ 限制到粗网格~$\Omega^{4h}$ 上
+            \begin{itemize}
+              \item 用经典迭代法迭代~$\nu_1$ 次计算~${{\bf{A}}^{4h}}{{\bf{u}}^{4h}} = {{\bf{r}}^{4h}}$，迭代初值为~${\bf{v}}^{4h}=0$
+              \item 将残余量~${{\bf{r}}^{4h}} $ 通过~${{\bf{r}}^{8h}} = I_{4h}^{8h}{{\bf{r}}^{4h}}$ 限制到粗网格~$\Omega^{8h}$ 上
+                  $$\vdots$$
+                  \begin{itemize}
+                  \item 求解误差方程~${{\bf{A}}^{Lh}}{{\bf{e}}^{Lh}} = {{\bf{r}}^{Lh}}$
+                      \end{itemize}
+                   $$\vdots$$
+            \end{itemize}
+            \begin{itemize}
+              \item 利用插值到细网格~$\Omega^{4h}$ 上的误差~${{\bf{e}}^{4h}}{\rm{ = }}I_{8h}^{4h}{{\bf{e}}^{8h}}$ 校正~${{\bf{v}}^{4h}} \leftarrow {{\bf{v}}^{4h}}{\rm{ + }}{{\bf{e}}^{4h}}$
+              \item 用经典迭代法迭代~$\nu_2$ 次计算~${{\bf{A}}^{4h}}{{\bf{u}}^{4h}} = {{\bf{r}}^{4h}}$，迭代初值为~${\bf{v}}^{4h}$
+            \end{itemize}
+      \end{itemize}
+      \begin{itemize}
+        \item 利用插值到细网格~$\Omega^{2h}$ 上的误差~${{\bf{e}}^{2h}}{\rm{ = }}I_{4h}^{2h}{{\bf{e}}^{4h}}$ 校正~${{\bf{v}}^{2h}} \leftarrow {{\bf{v}}^{2h}}{\rm{ + }}{{\bf{e}}^{2h}}$
+        \item 用经典迭代法迭代~$\nu_2$ 次计算~${{\bf{A}}^{2h}}{{\bf{u}}^{2h}} = {{\bf{r}}^{2h}}$，迭代初值为~${\bf{v}}^{2h}$
+      \end{itemize}
+\end{itemize}
+\begin{itemize}
+  \item 利用插值到细网格~$\Omega^{h}$ 上的误差~${{\bf{e}}^{h}}{\rm{ = }}I_{2h}^{h}{{\bf{e}}^{2h}}$ 校正~${{\bf{v}}^{h}} \leftarrow {{\bf{v}}^{h}}{\rm{ + }}{{\bf{e}}^{h}}$
+  \item 用经典迭代法迭代~$\nu_2$ 次计算~${{\bf{A}}^{h}}{{\bf{u}}^{h}} = {{\bf{r}}^{h}}$，迭代初值为~${\bf{v}}^{h}$
+\end{itemize}
+
+多重网格~$V$ 循环算法首先向粗网格方向限制，直到到达包含一个或几个内部网格点的最粗一层网格，然后再往细网格方向插值，直到最细一层网格结束，如图\;\ref{fig:side:v} 所示。在~$V$ 循环算法的基础上通过套迭代技术就可以实现~$W$ 循环算法和~$F$ 循环算法。
+
+\subsection{有限差分中的二重网格法}
+二重网格算法是多重网格算法的理论基础，本文主要采用二重网格~$V$ 循环算法求解标准有限差分隐格式\;(\ref{eq4.10})-(\ref{eq4.11})与非标准有限差分格式\;(\ref{eq4.29})-(\ref{eq4.31})。 二维矩形区域~$[a,b]\times[c,d]$ 上的网格剖分在~x 方向和~y 方向的节点数分别为~$m_1$ 和~$m_2$。在二重网格算法中，用~$\Omega^{h}=\{(i,j):0\leq i \leq m_1,0 \leq j \leq m_2\}$ 表示细网格，网格步长为~$h$；用~$\Omega^{H}=\{ (i,j):0 < i \le {{{m_1}} \mathord{\left/
+ {\vphantom {{{m_1}} 2}} \right.
+ \kern-\nulldelimiterspace} 2},0 < j \le {{{m_2}} \mathord{\left/
+ {\vphantom {{{m_2}} 2}} \right.
+ \kern-\nulldelimiterspace} 2}\} $ 表示粗网格，网格步长为~$H\;(H=2h)$。 如图\;\ref{fig:side:MG} 所示，红色网格节点表示粗网格节点（在边界上需要特殊处理）。
+\begin{figure}
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics[width=0.6\textwidth,height=0.5\textwidth]{fig/MG}
+  \caption{二维区域二重网格剖分图}\label{fig:side:MG}
+\end{figure}
+
+本文选用的插值算子~$I_H^h$ 为:
+\begin{align*}
+I_H^h{\rm{ = }}\left[ {\begin{array}{*{20}{c}}
+{{1 \mathord{\left/
+ {\vphantom {1 4}} \right.
+ \kern-\nulldelimiterspace} 4}}&{{1 \mathord{\left/
+ {\vphantom {1 2}} \right.
+ \kern-\nulldelimiterspace} 2}}&{{1 \mathord{\left/
+ {\vphantom {1 4}} \right.
+ \kern-\nulldelimiterspace} 4}}\\
+{{1 \mathord{\left/
+ {\vphantom {1 2}} \right.
+ \kern-\nulldelimiterspace} 2}}&1&{{1 \mathord{\left/
+ {\vphantom {1 2}} \right.
+ \kern-\nulldelimiterspace} 2}}\\
+{{1 \mathord{\left/
+ {\vphantom {1 4}} \right.
+ \kern-\nulldelimiterspace} 4}}&{{1 \mathord{\left/
+ {\vphantom {1 2}} \right.
+ \kern-\nulldelimiterspace} 2}}&{{1 \mathord{\left/
+ {\vphantom {1 4}} \right.
+ \kern-\nulldelimiterspace} 4}}
+\end{array}} \right].
+\end{align*}
+限制算子~$I_h^H$ 为:
+\begin{align*}
+I_{\rm{h}}^H = {\left( {{h \mathord{\left/
+ {\vphantom {h H}} \right.
+ \kern-\nulldelimiterspace} H}} \right)^d}{\left( {I_H^h} \right)^T}{\rm{ = }}\frac{1}{4}{\left( {I_H^h} \right)^T},
+\end{align*}
+其中~$d$ 是所求解问题的维数，本文主要求解二维区域，因此~$d=2$。
+
+于是可得二重网格~$V$ 循环算法步骤具体如下：
+\begin{itemize}
+  \item 在细网格~$\Omega^{h}$ 上用~G-S 迭代~$\nu_1$ 次计算~${{\bf{A}}^h}{{\bf{u}}^h} = {{\bf{f}}^h}$，迭代初值为~${\bf{v}}^h$
+  \item 将残余量~${{\bf{r}}^h} = {{\bf{f}}^h} - {{\bf{A}}^h}{{\bf{v}}^h}$ 通过~${{\bf{r}}^{H}} = I_h^{H}{{\bf{r}}^h}$ 限制到粗网格~$\Omega^{H}$ 上
+  \item 在粗网格上求解误差方程~${{\bf{A}}^{H}}{{\bf{e}}^{H}} = {{\bf{r}}^{H}}$
+  \item 将粗网格上的误差通过~${{\bf{e}}^{h}}{\rm{ = }}I_{H}^{h}{{\bf{e}}^{H}}$ 插值到细网格上，并校正~${{\bf{v}}^{h}} \leftarrow {{\bf{v}}^{h}}{\rm{ + }}{{\bf{e}}^{h}}$
+  \item 在细网格~$\Omega^{h}$ 上\;Jacobi 迭代~$\nu_2$ 次计算~${{\bf{A}}^{h}}{{\bf{u}}^{h}} = {{\bf{r}}^{h}}$，迭代初值为新的~${\bf{v}}^{h}$
+\end{itemize}
+\section{数值算例}
+本节主要给出了标准有限差分法及非标准有限差分法求解二维~Riezs 空间分数阶反应-扩散方程的数值计算结果，证实我们的理论分析。同时引入了多重网格算法，并与文献\cite{Liu2012} 中经典的~Gauss-Seidel 方法的计算效率做了对比，列出了计算消耗的时间。最后也应用这些数值方法来模拟二维~Riesz 分数阶~FHN 单域模型，得到了稳定的螺旋波。
+\subsection{二维~Riesz 分数阶反应-扩散方程}
+为了验证第四章中提出的数值方法收敛性理论的正确性，接下来我们实现了标准有限差分法和非标准有限差分法数值求解具有精确解的二维~Riesz 分数阶反应-扩散方程，并计算了相应的空间收敛阶和时间收敛阶。
+\exam {考虑如下二维~Riesz 分数阶反应-扩散方程}\label{exam5.1}
+ \begin{equation}\label{eq5.2}
+\frac{{\partial u}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + f(u) + f(x,y,t),\;(x,y,t) \in \Omega  \times (0,T]
+\end{equation}
+初值条件为：
+\begin{equation}\label{eq5.3}
+{u(x,y,{\rm{0}}){\rm{ = }}10{x^2}{{(1 - x)}^2}{y^2}{{(1 - y)}^2},\;(x,y) \in \Omega }
+\end{equation}
+边界条件为：
+\begin{equation}\label{eq5.4}
+{u(x,y,t) = 0,\;(x,y,t) \in \partial \Omega  \times (0,T]}
+\end{equation}
+其中~$\Omega =[0,1]\times [0,1]$, $f(u)=-u(1+u)$。并且
+\begin{equation*}
+  \begin{split}
+   f(x,y,t) &= 100{e^{ - 2t}}{x^4}{(1 - x)^4}{y^4}{(1 - y)^4}\\
+   & + 10{k_x}{c_{{\alpha _1}}}{e^{ - t}}{y^2}{(1 - y)^2}\left[ {g(x,{\alpha _1}) + g(1 - x,{\alpha _1})} \right]\\
+   & + 10{k_y}{c_{{\alpha _2}}}{e^{ - t}}{x^2}{(1 - x)^2}\left[ {g(y,{\alpha _2}) + g(1 - y,{\alpha _2})} \right],\\
+  \end{split}
+\end{equation*}
+其中
+\begin{equation*}
+ g(x,\alpha ) = \frac{{ - 24}}{{\Gamma (5 - \alpha )}}{x^{4 - \alpha }} + \frac{{12}}{{\Gamma (4 - \alpha )}}{x^{3 - \alpha }} + \frac{{ - 2}}{{\Gamma (3 - \alpha )}}{x^{2 - \alpha }}.
+\end{equation*}
+方程\;(\ref{eq5.2})-(\ref{eq5.4}) 的精确解为
+$$u(x,y,t)=10e^{-t}x^2(1-x)^2y^2(1-y)^2.$$
+在本文中，空间和时间方向的具有二范数~${\left\|  \cdot  \right\|_{L^2} }$ ( 或者无穷范数 ${\left\|  \cdot  \right\|_{L^\infty } }$ ) 的收敛阶定义\ucite{Zeng2014A}分别为 ：
+\begin{equation}\label{5.5}
+\begin{split}
+\frac{{log(\left\| {\eta (\varphi ({\tau _1}),N,{t_n})} \right\|/\left\| {\eta (\varphi ({\tau _2}),N,{t_n})} \right\|)}}{{log\left[ {\varphi ({\tau _1}){\rm{ }}/\varphi ({\tau _2})} \right]}},\\
+\frac{{log(\left\| {\eta (\varphi (\tau ),{N_1},{t_n})} \right\|/\left\| {\eta (\varphi (\tau ),{N_2},{t_n})} \right\|)}}{{log({N_1}{\rm{ }}/{N_2})}}
+\end{split}
+\end{equation}
+其中~ $\eta ({\varphi (\tau )},N,{t_n}) = u(x,y,{n\varphi (\tau )}) - u_N^n$。
+
+取空间各向异性扩散系数~$k_x=k_y=1$, 空间步长~$h_x=h_y=h=1/N$，下面我们先分析非标准有限差分格式的收敛性条件。此时~$r_1 = {k_x}{c_{{\alpha _1}}}{({h_x})^{{-\alpha _1}}}=-0.7071N^{\alpha _1}$，由于~$0<u<1$，由~${H_2} = \mathop {\max }\limits_{u \in \Omega } \left| {f'(u)} \right|=\mathop {\max }\limits_{u \in \Omega } \left| {2u+1} \right|$ 可知~$1<H_2<3$。对于不同的~ $\alpha_1$ 和~$\alpha_2$ 的取值，分别采用标准有限差分法和非标准有限差分法求解算例\;\ref{exam5.1} 在~$T$=1 时刻的数值解。 表\;\ref{tab5.1} 和表\;\ref{tab5.2} 分别给出了以上两种数值方法在~x 和~y 方向具有相同分数阶导数~$\alpha_1=\alpha_2=1.5$，此时若取~$N\geq35$ 有~$2r\beta>H_2$，非标准有限差分格式收敛。当~$2r\beta<H_2$ 时，由于~$\mathop {\lim }\limits_{{\rm{n}} \to \infty } \sum\limits_{l = 0}^n {g_\alpha ^{(l)} \to 0} $ ，取~$\tau<1/2$ 就能达到收敛性条件~$\tau  < 1/2({H_2} - 2r\beta )$。下面展示了时间步长取~$\tau=10^{-3}$ 时的误差及其空间收敛阶。
+\begin{table}[ht]
+\small
+  \centering
+  \caption{算例\;\ref{exam5.1} 标准有限差分法的误差及其空间收敛阶，其中~ $\alpha_1=\alpha_2=1.5$, $\tau=10^{-3}$。}\label{tab5.1}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+   N  & $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+    10 & 1.5134e-03 &   —    & 5.0027e-03 &  — \\
+    30 & 6.6189e-04 & 0.7528 & 1.8763e-03 &  0.8926\\
+    50 & 4.3897e-04 & 0.8039 & 1.1527e-03 &  0.9537\\
+    80 & 2.8299e-04 & 0.9341 & 7.3034e-04 &  0.9710\\
+  \hline
+ \end{tabular*}
+\end{table}
+\begin{table}[ht]
+\small
+  \centering
+  \caption{算例\;\ref{exam5.1} 非标准有限差分法的误差及其空间收敛阶，其中~ $\alpha_1=\alpha_2=1.5$, $\tau=10^{-3}$。}\label{tab5.2}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+   N  & $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+    10 & 1.7932e-03 &   —    & 5.6501e-03 &   —    \\
+    30 & 6.2142e-04 & 0.9646 & 1.8752e-03 & 1.0040 \\
+    50 & 3.5843e-04 & 1.0772 & 1.1515e-03 & 0.9546 \\
+    80 & 2.2342e-04 & 1.0057 & 7.2909e-04 & 0.9724 \\
+  \hline
+ \end{tabular*}
+\end{table}
+
+ 表\;\ref{tab5.3} 和表\;\ref{tab5.4} 分别给出了标准有限差分法和非标准有限差分法两种数值方法在~x 和~y 方向具有不同的分数阶导数~$\alpha_1=1.8$，$\alpha_2=1.5$，时间步长为~$\tau=10^{-4}$ 时误差及其空间收敛阶。从表\;\ref{tab5.1}-表\;\ref{tab5.4} 可以看出，在无穷范数~${\left\|  \cdot  \right\|_{L^\infty } }$ 意义下的空间收敛阶接近~1，这与第四章中定理\;\ref{convergence1} 和定理\;\ref{convergence2} 理论分析相符。
+\begin{table}[ht]
+\small
+  \centering\caption{算例\;\ref{exam5.1} 标准有限差分法的误差及其空间收敛阶，其中~ $\alpha_1=1.8, \alpha_2=1.5$，$\tau=10^{-4}$。}\label{tab5.3}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+   N  &  $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+    10 & 1.4694e-03 &   —    & 4.7863e-03 & — \\
+    30 & 6.6272e-04 & 0.7248 & 1.7786e-03 & 0.9011\\
+    50 & 4.1956e-04 & 0.8949 & 1.0909e-03 & 0.9569 \\
+    80 & 2.7009e-04 & 0.9371 & 6.9027e-04 & 0.9737 \\
+  \hline
+ \end{tabular*}
+\end{table}
+
+\begin{table}[ht]
+\small
+  \centering\caption{算例\;\ref{exam5.1} 非标准有限差分法的误差及其时间收敛阶，其中~ $\alpha_1=1.8, \alpha_2=1.5$，$\tau=10^{-4}$。}\label{tab5.4}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+   N  &  $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+    10 & 2.4694e-03 &    —   & 4.7862e-03 &    —  \\
+    30 & 6.8568e-04 & 1.1663 & 1.7785e-03 & 0.9011 \\
+    50 & 4.1951e-04 & 0.9618 & 1.0908e-03 & 0.9570 \\
+    80 & 2.7004e-04 & 0.9617 & 6.5517e-04 & 1.0846 \\
+  \hline
+ \end{tabular*}
+\end{table}
+
+ 表\;\ref{tab5.5} 和表\;\ref{tab5.6} 分别给出了第四章中的标准有限差分法和非标准有限差分法在分数阶导数~$\alpha_1=\alpha_2=1.6$ 和空间步长~$h=h_x=h_y=1/80$ 时的误差及其时间收敛阶。由表中的数据结果可以得出，两种数值方法在无穷范数~${\left\|  \cdot  \right\|_{L^\infty } }$ 意义下的时间收敛阶接近~1，这与第四章中的定理\;\ref{convergence1} 和定理\;\ref{convergence2} 理论分析相符。
+\begin{table}[ht]
+\small
+  \centering\caption{算例\;\ref{exam5.1} 标准有限差分法的误差及其时间收敛阶，其中~$\alpha_1=1.5$，$\alpha_2=1.8$, $N=80$。}\label{tab5.5}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  $\tau$ & $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+    1/10 & 1.0710e-03 &    —   & 1.8177e-03 &    —    \\
+    1/30 & 5.2345e-04 & 0.6516 & 8.9262e-04 &  0.6473 \\
+    1/50 & 3.7116e-04 & 0.6730 & 6.0826e-04 &  0.7509 \\
+    1/80 & 2.6402e-04 & 0.7247 & 4.2614e-04 &  0.7571 \\
+  \hline
+ \end{tabular*}
+\end{table}
+
+\begin{table}[ht]
+\small
+  \centering\caption{算例\;\ref{exam5.1} 非标准有限差分法的误差及其时间收敛阶，其中~ $\alpha_1=1.5$，$\alpha_2=1.8$, $h=1/80$。}\label{tab5.6}
+  \begin{tabular*}{0.72\paperwidth}{@{\extracolsep{\fill}} c c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  $\tau$ & $ L^2$ 误差 &  收敛阶  &  $L^\infty$ 误差 &  收敛阶 \\
+     \hline
+   1/10 & 4.3554e-04 &    —   & 8.9545e-04 &    —   \\
+   1/30 & 2.9011e-04 & 0.9820 & 5.2228e-04 & 0.9320\\
+   1/50 & 3.0985e-04 & 0.9679 & 1.0677e-03 & 0.9739 \\
+   1/80 & 2.0064e-04 & 0.9320 & 6.4992e-04 & 1.0647 \\
+  \hline
+ \end{tabular*}
+\end{table}
+
+为了更直观的展示算例\;\ref{exam5.1} 的标准有限差分法和非标准有限差分法数值求解效果，图\;\ref{fig:5.5} 给出了扩散系数为~$k_x=k_y=1$，分数阶导数为~$\alpha_1=\alpha_2=1.5$，$T=1$ 时刻，空间步长取~$h=h_x=h_y=1/80$ 时标准有限差分法数值解\;\ref{fig:subfig:a}、非标准有限差分法数值解\;\ref{fig:subfig:b} 与精确解\;\ref{fig:subfig:c} 的结果图。由图\;\ref{fig:5.5} 可以看出，该数值解很好的逼近原问题的精确解。
+\begin{figure}[ht]
+    \centering
+    \subfigure[精确解]{
+    \label{fig:subfig:a} %% label for first subfigure
+    \includegraphics[width=0.4\textwidth,height=0.35\textwidth]{fig/exact}}
+    \hspace{0.08\textwidth}
+    \subfigure[标准有限差分法数值解]{
+    \label{fig:subfig:b} %% label for second subfigure
+    \includegraphics[width=0.4\textwidth,height=0.35\textwidth]{fig/NSFDM}}
+    \hspace{0.08\textwidth}
+    \subfigure[非标准有限差分法的数值解]{
+    \label{fig:subfig:c} %% label for second subfigure
+    \includegraphics[width=0.4\textwidth,height=0.35\textwidth]{fig/SFDM}}
+  \caption{算例\;\ref{exam5.1} 的数值解与精确解~$h=1/80$，$T=1$。}
+  \label{fig:5.5} %% label for entire figure
+\end{figure}
+\subsection{二维~Riesz 空间分数阶~FHN 模型}
+本节主要采用标准有限差分法和非标准有限差分法分别求解了二维区域上的~Riesz 分数阶~FHN 模型，不同扩散系数和分数阶导数值的求解结果主要以图的形式展示，直观地反映跨膜电势在心肌细胞中的传播规律。
+\exam{考虑如下具有非线性右端项的二维~Riesz 分数阶~FHN 模型}\label{exam5.2}
+\begin{equation}\label{eq5.6}
+\left\{ \begin{array}{l}
+\frac{{\partial u}}{{\partial t}} = {k_x}\frac{{{\partial ^{{\alpha _1}}}u}}{{\partial {{\left| x \right|}^{{\alpha _1}}}}} + {k_y}\frac{{{\partial ^{{\alpha _2}}}u}}{{\partial {{\left| y \right|}^{{\alpha _2}}}}} + u(1 - u)(u - a) - v\\
+\frac{{\partial v}}{{\partial t}} = \varepsilon (\beta u - \gamma v - \delta ),(x,y,t) \in \Omega  \times (0,T]
+\end{array} \right.
+\end{equation}
+ 其中二维区域~$\Omega  = \left\{ {(x,y):0 \le x \le 2.5,0 \le y \le 2.5} \right\}$，参数~$a=0.1$，$\varepsilon=0.01$，$\beta=0.5$，$\gamma=1$，$\delta=0$。
+ 初值条件为：
+ \begin{equation}\label{eq5.7}
+\begin{split}
+&u{\rm{(}}x,y,{\rm{0)}} = \left\{ \begin{array}{l}
+1.0,\hspace{0.5cm} x < 1.25,y < 1.25\\
+0.0,\hspace{0.5cm}elsewhere
+\end{array} \right.\\
+&v{\rm{(}}x,y,{\rm{0)}} = \left\{ \begin{array}{l}
+0.1,\hspace{0.5cm} y \ge 1.25\\
+0.0,\hspace{0.5cm}elsewhere
+\end{array} \right.
+\end{split}
+\end{equation}
+边界条件为~Dirichlet 0~边界条件：
+\begin{equation}\label{eq5.8}
+\begin{split}
+   u{\rm{(0}},y,t{\rm{)}} = u{\rm{(2}}{\rm{.5}},y,t{\rm{)}} = 0;\\
+   u{\rm{(}}x,0,t{\rm{)}} = u{\rm{(}}x,2.5,t{\rm{)}} = 0.
+\end{split}
+\end{equation}
+
+心脏的电生理模型有效地描述了跨膜电势在心肌细胞中的传播过程及规律，上述~Riesz 分数阶~FHN 单细胞单域模型只是其中最精简的一种模型。除此之外，还有~Ten Tusscher 等人提出了~Tusscher 细胞模型\ucite{Tusscher2004}，Wang 等人研究的电势模型\ucite{wang2017}。
+
+二维区域~$\Omega$ 离散为~$m_1\times m_2=256\times 256$ 节点，首先我们分析非标准有限差分格式的收敛性条件。与算例\;\ref{exam5.1} 分析过程相同，由于~$0<u<1$，由~${H_2} = \mathop {\max }\limits_{u \in \Omega } \left| {f'(u)} \right|=\mathop {\max }\limits_{u \in \Omega } \left| {2u+1} \right|$ 可知~$1<H_2<3$。时间步长为~$\tau =0.1$。分别用\;\ref{FDM} 节的标准有限差分法和\;\ref{NSFDM} 节中提出的非标准有限差分法求解算例\;\ref{exam5.2} 中的第一个微分方程，用向后差分方法求解第二个常微分方程。 在~ T=1000 时刻两种数值方法都能得到稳定的相同的螺旋波。本文主要展示非标准有限差分方法的模拟结果图，关于标准有限差分方法的模拟结果图可参考文献\cite{Liu2012}。
+
+ \begin{figure}[ht]
+    \centering
+  %\label{fig:subfig:1a} %% label for first subfigure
+    \includegraphics[width=0.35\textwidth,height=0.3\textwidth]{fig/fig1a}
+  \hspace{0.08\textwidth}
+    %\label{fig:subfig:2a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.3\textwidth]{fig/fig2a}
+    \hspace{0.08\textwidth}
+    %\label{fig:subfig:3a} %% label for second subfigure
+  \subfigure[$k_x=k_y=10^{-4}$]{
+    \label{fig:subfig:1a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.3\textwidth]{fig/fig1b}}
+    \hspace{0.08\textwidth}
+  \subfigure[$k_x=k_y=10^{-5}$]{
+    \label{fig:subfig:1b} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.3\textwidth]{fig/fig2b}}
+  \caption{FitzHugh-Nagumo 单域模型在~$\alpha_1=\alpha_2=2$，$T=1000$ 时刻的螺旋波。}
+  \label{fig:5.6} %% label for entire figure
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    %\label{fig:subfig:2a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig3a}
+    \hspace{0.08\textwidth}
+    %\label{fig:subfig:3a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig4a}
+    \hspace{0.08\textwidth}
+  \subfigure[$\alpha_1=\alpha_2=1.7$]{
+    \label{fig:subfig:3a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig3b}}
+     \hspace{0.08\textwidth}
+  \subfigure[$\alpha_1=\alpha_2=1.5$]{
+    \label{fig:subfig:3b} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig4b}}
+  \caption{FitzHugh-Nagumo 单域模型在~$k_x=k_y=10^{-4}$，$T=1000$ 时刻的螺旋波。}
+  \label{fig:5.7} %% label for entire figure
+\end{figure}
+
+具有整数阶~ $\alpha_1=\alpha_2=2$ 及扩散系数~$k_x=k_y=10^{-4}$，$k_x=k_y=10^{-5}$ 的螺旋波的性态展示如图\;\ref{fig:5.6} 所示。具有分数阶~ $\alpha_1=\alpha_2=1.7$，$\alpha_1=\alpha_2=1.5$ 及扩散系数~$k_x=k_y=10^{-4}$ 的螺旋波的性态展示如图\;\ref{fig:5.7} 所示。从图\;\ref{fig:5.6} 和图\;\ref{fig:5.7} 可以看出，在相同的扩散系数下，激发波前的宽度随着分数阶阶数降低显著减小；当分数阶阶数相同时，激发波前的宽度随着扩散系数值降低也显著减小，且区域能够容纳的波数增加。
+
+\begin{figure}[ht]
+    \centering
+    %\label{fig:subfig:2a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig5a}
+    \hspace{0.08\textwidth}
+    %\label{fig:subfig:3a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig6a}
+    \hspace{0.08\textwidth}
+  \subfigure[$k_x=10^{-4},k_y/k_x=0.25$]{
+    \label{fig:subfig:5a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig5b}}
+     \hspace{0.08\textwidth}
+  \subfigure[$k_y=10^{-4},k_x/k_y=0.25$]{
+    \label{fig:subfig:5b} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig6b}}
+  \caption{FitzHugh-Nagumo 单域模型在~$\alpha_1=\alpha_2=2$，$T=1000$ 时刻的螺旋波。}
+  \label{fig:5.8} %% label for entire figure
+\end{figure}
+
+对于空间各向异性扩散系数比例~$k_x=10^{-4}$，$k_y/k_x=0.25\;(\alpha_1=\alpha_2=2)$ 和~$k_y=10^{-4}$，$k_x/k_y=0.25\;(\alpha_1=\alpha_2=2)$ 的分数阶~FHN 单域模型的螺旋波传播展示如图\;\ref{fig:5.8} 所示，由图看出螺旋波成椭圆型图案。图\;\ref{fig:5.7} 和图\;\ref{fig:5.8} 反应了扩散系数对~FHN 单域模型的影响。
+\begin{figure}[ht]
+    \centering
+    %\label{fig:subfig:2a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig7a}
+    \hspace{0.08\textwidth}
+    %\label{fig:subfig:3a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig8a}
+    \hspace{0.08\textwidth}
+  \subfigure[$\alpha_1=2,\;\alpha_2/\alpha_1=0.825$]{
+    \label{fig:subfig:7a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig7b}}
+     \hspace{0.08\textwidth}
+  \subfigure[$\alpha_2=2,\;\alpha_1/\alpha_2=0.825$]{
+    \label{fig:subfig:7b} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig8b}}
+  \caption{FitzHugh-Nagumo 单域模型在~$k_x=k_y=10^{-4}$，$T=1000$ 时刻的螺旋波。}
+  \label{fig:5.9} %% label for entire figure
+\end{figure}
+
+具有空间分数阶导数比例~$\alpha_1=2,\;\alpha_2=1.65$ 和~$\alpha_2=2,\;\alpha_1/\alpha_2=0.825$ 的分数阶~FHN 单域模型的螺旋波传播展示如图\;\ref{fig:5.9} 和图\;\ref{fig:5.10} 所示。图\;\ref{fig:5.9} 展示了~x 方向为整数阶，~y 方向为分数阶的椭圆形螺旋图案，图\;\ref{fig:5.10} 展示了~y 方向为整数阶，~x 方向为分数阶的椭圆形螺旋图案。比较图\;\ref{fig:5.8} 和图\;\ref{fig:5.9} 可知，空间各向异性扩散系数比例对波的影响与空间分数阶导数比例对波的影响具有等价的效果。比较\;\ref{fig:5.8} 和\;\ref{fig:5.10} 可得到与前面相似的结论：激发波前宽度随着分数阶阶数降低而减小，随着扩散系数值降低也显著减小，并且区域能够容纳的波数增加。
+
+\begin{table}[ht]
+\small
+  \centering\caption{多重网格算法与文献\cite{Liu2012}方法的~CPU计算时间（小时）}\label{tab5.7}
+  \begin{tabular*}{0.75\paperwidth}{@{\extracolsep{\fill}}c c c c}
+    \hline
+   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  参数& 数值算例 & 文献\cite{Liu2012} & 多重网格法   \\
+     \hline
+   $\alpha_1=\alpha_2=2$&算例\;\ref{exam5.1} ($N=20,\tau=10^{-3},T=1$) & 0.17   &  0.01    \\
+   &算例\;\ref{exam5.2} ($N=256,\tau=0.1,T=1000$) & 5.75  & 0.52\\
+  \hline
+  $\alpha_1=1.5,\alpha_2=1.8$&算例\;\ref{exam5.1} ($N=20,\tau=10^{-3},T=1$) & 2.8   &  0.35    \\
+  &算例\;\ref{exam5.2} ($N=256,\tau=0.1,T=1000$) & 20.35  & 3.52\\
+  \hline
+ \end{tabular*}
+\end{table}
+
+表\;\ref{tab5.7} 列出了多重网格算法和文献\cite{Liu2012}中~Liu 等人采用的方法的计算算例\;\ref{exam5.1} 和算例\;\ref{exam5.2} 的~CPU 时间，由表可以看出本文采用的多重网格方法计算更快。
+\clearpage
+\begin{figure}[ht]
+    \centering
+    %\label{fig:subfig:2a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig9a}
+    \hspace{0.08\textwidth}
+    %\label{fig:subfig:3a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig10a}
+    \hspace{0.08\textwidth}
+  \subfigure[$\alpha_1=2,\;\alpha_2/\alpha_1=0.825,\;k_x=10^{-4},k_y/k_x=0.25$]{
+    \label{fig:subfig:9a} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig9b}}
+     \hspace{0.08\textwidth}
+  \subfigure[$\alpha_2=2,\;\alpha_1/\alpha_2=0.825,\;k_y=10^{-4},k_x/k_y=0.25$]{
+    \label{fig:subfig:9b} %% label for second subfigure
+    \includegraphics[width=0.35\textwidth,height=0.30\textwidth]{fig/fig10b}}
+  \caption{FitzHugh-Nagumo 单域模型在~$T=1000$ 时刻的螺旋波。}
+  \label{fig:5.10} %% label for entire figure
+\end{figure}
+\section{本章小结}
+本章首先介绍了多重网格算法的基本理论及其主要的算法步骤，重点给出了二维多重网格算法的~V 循环结构。接着本章给出了具有精确解的二维区域~Riesz 空间分数阶反应-扩散模型，分别列出了标准有限差分法和非标准有限差分方法的计算结果误差及其时间与空间收敛阶。最后本章考虑了二维矩形区域上的~Riesz 空间分数阶~FHN 单域模型，主要展示了非标准有限差分法求解的计算结果。

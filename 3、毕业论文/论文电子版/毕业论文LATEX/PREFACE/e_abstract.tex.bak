@@ -1,0 +1,15 @@
+\clearpage
+ \chapter*{Abstract}
+ \markboth{Abstract}{Abstract}
+ \addcontentsline{toc}{chapter}{Abstract}
+\linespread{1.25}\selectfont
+Cardiac electrophysiological simulation is to simulate the transmembrane potential in the myocardial cells in the law of transmission Through computer, which is an important means to understand many aspects of the physiological and pathophysiological cardiac behavior. However, the original integer FHN model has great limitations to simulate the transmembrane potential for heterogeneity and complex conductivity characteristics of the myocardial cells. Taking the nonlocal characteristics of fractional derivative and its application in the field of abnormal ion diffusion into consideration, the nonlinear fractional FHN model is more effective in describing the important properties of cardiomyocytes such as memory and heredity. Since it's very difficult to derive the analytic solution of nonlinear fractional FHN model, the numerical solution to the fractional FHN model becomes the inevitable trend of resent research. In this paper, we establish a standard non-standard finite difference method for solving nonlinear fractional FHN model and prove the stability and convergence of the proposed method.
+
+First of all, we introduce the basic theory of fractional derivative as well as the Riesz space fractional FHN model defined by the standard Gr¨¹mwald-Letnikov fractional derivative. In order to obtain a stable differential discrete format for solving the Riesz space fractional FHN model, the shift Gr¨¹mwald-Letnikov fractional derivative definition was introduced. And realized the unconditionally stable standard finite difference scheme proposed by Liu et al.
+
+Then, considering the non-local characteristics of nonstandard finite difference scheme, we present a nonstandard finite difference method based on Taylor expansion, which effectively solved the Riesz space fractional FHN model defined by the shift Gr¨¹mwald-Letnikov fractional derivative. And we also prove the stability and convergence of the format: take~$\tau <1/2 ({H_2} - 2r \beta) $ when $ 2r \beta <{H_2}$, the nonstandard finite difference scheme is stable and convergent.
+
+Finally, two numerical examples are used to verify the stability and convergence of the method: for the two-dimensional Riesz fractional reaction-diffusion equation, the numerical error and the order of convergence of time and space for the standard finite difference scheme and the non-standard finite difference scheme are given; For the two-dimensional Riesz space fractional FHN model, the periodic spiral wave formed by transmembrane potential under different fractional derivatives and diffusion coefficients was successfully simulated. In the process of numerical calculation, the multi-grid method is adopted, which effectively improves the computational efficiency of the numerical scheme.
+
+\vspace{0.5cm}
+\noindent{\bf Key Words: }Fractional FitzHugh-Nagumo model, Gr\"{u}mwald-Letnikov fractional derivative, nonstandard finite difference scheme
